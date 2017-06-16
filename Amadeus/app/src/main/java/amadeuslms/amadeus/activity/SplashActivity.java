@@ -1,11 +1,9 @@
-package amadeuslms.amadeus.splashscreen;
+package amadeuslms.amadeus.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
-
-import amadeuslms.amadeus.login.LoginActivity;
 
 /**
  * Created by zambom on 09/06/17.

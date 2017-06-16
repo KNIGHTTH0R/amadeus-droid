@@ -11,7 +11,7 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     android:focusable="true"
     android:focusableInTouchMode="true"
-    tools:context="amadeuslms.amadeus.login.LoginActivity">
+    tools:context="amadeuslms.amadeus.activity.LoginActivity">
 
     <!-- Login progress -->
     <ProgressBar

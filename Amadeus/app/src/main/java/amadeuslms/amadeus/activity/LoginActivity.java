@@ -1,4 +1,4 @@
-package amadeuslms.amadeus.login;
+package amadeuslms.amadeus.activity;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;

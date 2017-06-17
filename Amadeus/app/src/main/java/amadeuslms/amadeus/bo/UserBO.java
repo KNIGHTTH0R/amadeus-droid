@@ -39,6 +39,8 @@ public class UserBO {
         String json = HttpUtils.post(url.toString(), content.toString(), "");
 
         if (json != null && json.trim().length() > 0) {
+            System.out.print(json);
+
             Type type = new TypeToken<TokenResponse>(){}.getType();
 
             TokenResponse token = new Gson().fromJson(json, type);

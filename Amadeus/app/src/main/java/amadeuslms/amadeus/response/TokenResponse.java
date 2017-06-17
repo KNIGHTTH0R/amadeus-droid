@@ -6,17 +6,17 @@ package amadeuslms.amadeus.response;
 
 public class TokenResponse extends GenericResponse {
 
-    private String type, access, refresh, scope;
+    private String type_token, access, refresh, scope;
     private int expires;
 
     @Override
     public String getType() {
-        return type;
+        return type_token;
     }
 
     @Override
     public void setType(String type) {
-        this.type = type;
+        this.type_token = type;
     }
 
     public String getAccess() {

@@ -6,33 +6,31 @@ package amadeuslms.amadeus.response;
 
 public class TokenResponse extends GenericResponse {
 
-    private String type_token, access, refresh, scope;
-    private int expires;
+    private String token_type, refresh_token, access_token, scope;
+    private int expires_in;
 
-    @Override
-    public String getType() {
-        return type_token;
+    public String getToken_type() {
+        return token_type;
     }
 
-    @Override
-    public void setType(String type) {
-        this.type_token = type;
+    public void setToken_type(String token_type) {
+        this.token_type = token_type;
     }
 
-    public String getAccess() {
-        return access;
+    public String getRefresh_token() {
+        return refresh_token;
     }
 
-    public void setAccess(String access) {
-        this.access = access;
+    public void setRefresh_token(String refresh_token) {
+        this.refresh_token = refresh_token;
     }
 
-    public String getRefresh() {
-        return refresh;
+    public String getAccess_token() {
+        return access_token;
     }
 
-    public void setRefresh(String refresh) {
-        this.refresh = refresh;
+    public void setAccess_token(String access_token) {
+        this.access_token = access_token;
     }
 
     public String getScope() {
@@ -43,11 +41,11 @@ public class TokenResponse extends GenericResponse {
         this.scope = scope;
     }
 
-    public int getExpires() {
-        return expires;
+    public int getExpires_in() {
+        return expires_in;
     }
 
-    public void setExpires(int expires) {
-        this.expires = expires;
+    public void setExpires_in(int expires_in) {
+        this.expires_in = expires_in;
     }
 }

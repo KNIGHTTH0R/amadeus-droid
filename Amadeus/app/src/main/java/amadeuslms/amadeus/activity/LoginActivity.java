@@ -278,7 +278,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             super.onPostExecute(userResponse);
 
             if (userResponse != null) {
-                if (userResponse.getSuccess() && userResponse.getNumber() == 1) {
+                /*if (userResponse.getSuccess() && userResponse.getNumber() == 1) {
                     Intent intent = new Intent(context, SplashActivity.class);
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -287,7 +287,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 } else if (!TextUtils.isEmpty(userResponse.getTitle()) && !TextUtils.isEmpty(userResponse.getMessage())){
                     title = userResponse.getTitle();
                     message = userResponse.getMessage();
-                }
+                }*/
             }
 
             if(!TextUtils.isEmpty(title) && !TextUtils.isEmpty(message)){

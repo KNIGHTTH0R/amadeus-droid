@@ -39,17 +39,20 @@ public class UserBO {
         String json = HttpUtils.post(url.toString(), content.toString(), "");
 
         if (json != null && json.trim().length() > 0) {
-            System.out.print(json);
+            System.out.println(json);
 
             Type type = new TypeToken<TokenResponse>(){}.getType();
 
             TokenResponse token = new Gson().fromJson(json, type);
 
+            System.out.println(token.getMessage() + " " + token.getScope());
+
             url = new StringBuilder();
             url.append(host);
-            url.append("/api/users");
+            url.append("/api/users/login/");
 
-            json = HttpUtils.post(url.toString(), content.toString(), token.getType() + " " + token.getAccess());
+            json = HttpUtils.post(url.toString(), content.toString(), token.getToken_type() + " " + token.getAccess_token());
+            System.out.println(json);
 
             if (json != null && json.trim().length() > 0) {
                 type = new TypeToken<UserResponse>(){}.getType();

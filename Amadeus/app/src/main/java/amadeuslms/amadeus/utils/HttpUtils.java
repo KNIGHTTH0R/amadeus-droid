@@ -33,6 +33,8 @@ public class HttpUtils {
 
         Request request = builder.build();
 
+        System.out.println(request.headers().toString());
+
         Response response = client.newCall(request).execute();
 
         String jsonResponse = response.body().string();

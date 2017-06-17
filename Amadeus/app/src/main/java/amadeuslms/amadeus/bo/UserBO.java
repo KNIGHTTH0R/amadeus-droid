@@ -5,9 +5,14 @@ import android.content.Context;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
+import org.json.JSONObject;
+
 import java.lang.reflect.Type;
+import java.util.HashMap;
+import java.util.Map;
 
 import amadeuslms.amadeus.bean.ApplicationProperties;
+import amadeuslms.amadeus.response.TokenResponse;
 import amadeuslms.amadeus.response.UserResponse;
 import amadeuslms.amadeus.utils.HttpUtils;
 
@@ -21,16 +26,34 @@ public class UserBO {
 
         StringBuilder url = new StringBuilder();
         url.append(host);
-        url.append("login");
+        url.append("/api/token");
 
         ApplicationProperties.setWebServiceURL(context, host);
 
-        String json = HttpUtils.post(url.toString(), "");
+        Map<String, String> data = new HashMap<String, String>();
+        data.put("email", email);
+        data.put("password", password);
+
+        JSONObject content = new JSONObject(data);
+
+        String json = HttpUtils.post(url.toString(), content.toString(), "");
 
         if (json != null && json.trim().length() > 0) {
-            Type type = new TypeToken<UserResponse>(){}.getType();
+            Type type = new TypeToken<TokenResponse>(){}.getType();
 
-            return new Gson().fromJson(json, type);
+            TokenResponse token = new Gson().fromJson(json, type);
+
+            url = new StringBuilder();
+            url.append(host);
+            url.append("/api/users");
+
+            json = HttpUtils.post(url.toString(), content.toString(), token.getType() + " " + token.getAccess());
+
+            if (json != null && json.trim().length() > 0) {
+                type = new TypeToken<UserResponse>(){}.getType();
+
+                return new Gson().fromJson(json, type);
+            }
         }
 
         return null;

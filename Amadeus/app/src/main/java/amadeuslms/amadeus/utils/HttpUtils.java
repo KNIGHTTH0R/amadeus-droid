@@ -14,12 +14,16 @@ import okhttp3.Response;
 
 public class HttpUtils {
 
-    public static String post(String address, String json) throws IOException {
+    public static String post(String address, String json, String token) throws IOException {
         OkHttpClient client = new OkHttpClient();
 
         Request.Builder builder = new Request.Builder();
 
         builder.url(address);
+
+        if (token != "") {
+            builder.addHeader("Authorization", token);
+        }
 
         MediaType mediaType = MediaType.parse("application/json; charset=utf-8");
 

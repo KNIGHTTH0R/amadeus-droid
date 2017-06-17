@@ -10,5 +10,8 @@
     <string name="error_invalid_password">Essa senha é inválido</string>
     <string name="error_incorrect_password">Senha incorreta</string>
     <string name="error_field_required">Esse campo é obrigatório</string>
+    <string name="login_progress">Entrando na conta...</string>
 
+    <string name="error_box_title">Algo deu errado!</string>
+    <string name="error_box_msg">Ocorreu um erro durante o processamento da sua requisição. Por favor, tente novamente mais tarde.</string>
 </resources>

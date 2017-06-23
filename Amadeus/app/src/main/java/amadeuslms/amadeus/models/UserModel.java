@@ -7,7 +7,7 @@ package amadeuslms.amadeus.models;
 public class UserModel {
 
     private int user_id;
-    private String email, social_name, username, last_name;
+    private String email, social_name, username, last_name, image;
 
     public int getUser_id() {
         return user_id;
@@ -47,5 +47,13 @@ public class UserModel {
 
     public void setLast_name(String last_name) {
         this.last_name = last_name;
+    }
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
     }
 }

@@ -36,6 +36,7 @@ import java.util.List;
 
 import amadeuslms.amadeus.R;
 import amadeuslms.amadeus.bo.UserBO;
+import amadeuslms.amadeus.cache.UserCacheController;
 import amadeuslms.amadeus.response.UserResponse;
 
 /**
@@ -278,8 +279,10 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             super.onPostExecute(userResponse);
 
             if (userResponse != null) {
-                /*if (userResponse.getSuccess() && userResponse.getNumber() == 1) {
-                    Intent intent = new Intent(context, SplashActivity.class);
+                if (userResponse.getSuccess() && userResponse.getNumber() == 1) {
+                    UserCacheController.setUserCache(context, userResponse.getData());
+
+                    Intent intent = new Intent(context, HomeActivity.class);
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
                     startActivity(intent);
@@ -287,7 +290,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 } else if (!TextUtils.isEmpty(userResponse.getTitle()) && !TextUtils.isEmpty(userResponse.getMessage())){
                     title = userResponse.getTitle();
                     message = userResponse.getMessage();
-                }*/
+                }
             }
 
             if(!TextUtils.isEmpty(title) && !TextUtils.isEmpty(message)){

@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import amadeuslms.amadeus.bean.ApplicationProperties;
+import amadeuslms.amadeus.cache.TokenCacheController;
 import amadeuslms.amadeus.response.TokenResponse;
 import amadeuslms.amadeus.response.UserResponse;
 import amadeuslms.amadeus.utils.HttpUtils;
@@ -39,25 +40,28 @@ public class UserBO {
         String json = HttpUtils.post(url.toString(), content.toString(), "");
 
         if (json != null && json.trim().length() > 0) {
-            System.out.println(json);
 
             Type type = new TypeToken<TokenResponse>(){}.getType();
 
             TokenResponse token = new Gson().fromJson(json, type);
 
-            System.out.println(token.getMessage() + " " + token.getScope());
+            if (token != null) {
+                token.setWebserver_url(host);
 
-            url = new StringBuilder();
-            url.append(host);
-            url.append("/api/users/login/");
+                TokenCacheController.setTokenCache(context, token);
 
-            json = HttpUtils.post(url.toString(), content.toString(), token.getToken_type() + " " + token.getAccess_token());
-            System.out.println(json);
+                url = new StringBuilder();
+                url.append(host);
+                url.append("/api/users/login/");
 
-            if (json != null && json.trim().length() > 0) {
-                type = new TypeToken<UserResponse>(){}.getType();
+                json = HttpUtils.post(url.toString(), content.toString(), token.getToken_type() + " " + token.getAccess_token());
 
-                return new Gson().fromJson(json, type);
+                if (json != null && json.trim().length() > 0) {
+                    type = new TypeToken<UserResponse>() {
+                    }.getType();
+
+                    return new Gson().fromJson(json, type);
+                }
             }
         }
 

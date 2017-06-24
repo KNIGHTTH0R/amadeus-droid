@@ -1,21 +1,15 @@
 package amadeuslms.amadeus.models;
 
+import android.text.TextUtils;
+
 /**
  * Created by zambom on 16/06/17.
  */
 
 public class UserModel {
 
-    private int user_id;
-    private String email, social_name, username, last_name, image;
-
-    public int getUser_id() {
-        return user_id;
-    }
-
-    public void setUser_id(int user_id) {
-        this.user_id = user_id;
-    }
+    private String email, social_name, username, last_name, image, description, last_update, date_created;
+    private boolean is_staff, is_active;
 
     public String getEmail() {
         return email;
@@ -55,5 +49,53 @@ public class UserModel {
 
     public void setImage(String image) {
         this.image = image;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getLast_update() {
+        return last_update;
+    }
+
+    public void setLast_update(String last_update) {
+        this.last_update = last_update;
+    }
+
+    public String getDate_created() {
+        return date_created;
+    }
+
+    public void setDate_created(String date_created) {
+        this.date_created = date_created;
+    }
+
+    public boolean is_staff() {
+        return is_staff;
+    }
+
+    public void setIs_staff(boolean is_staff) {
+        this.is_staff = is_staff;
+    }
+
+    public boolean is_active() {
+        return is_active;
+    }
+
+    public void setIs_active(boolean is_active) {
+        this.is_active = is_active;
+    }
+
+    public String getDisplayName() {
+        if (TextUtils.isEmpty(social_name)) {
+            return username + " " + last_name;
+        }
+
+        return social_name;
     }
 }

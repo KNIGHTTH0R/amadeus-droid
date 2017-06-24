@@ -6,7 +6,7 @@ package amadeuslms.amadeus.response;
 
 public class TokenResponse extends GenericResponse {
 
-    private String token_type, refresh_token, access_token, scope;
+    private String token_type, refresh_token, access_token, scope, webserver_url;
     private int expires_in;
 
     public String getToken_type() {
@@ -47,5 +47,13 @@ public class TokenResponse extends GenericResponse {
 
     public void setExpires_in(int expires_in) {
         this.expires_in = expires_in;
+    }
+
+    public String getWebserver_url() {
+        return webserver_url;
+    }
+
+    public void setWebserver_url(String webserver_url) {
+        this.webserver_url = webserver_url;
     }
 }

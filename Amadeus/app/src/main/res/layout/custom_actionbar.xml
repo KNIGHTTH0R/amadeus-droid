@@ -11,15 +11,22 @@
         android:id="@+id/menu_back_btn"
         android:layout_width="0dip"
         android:layout_height="match_parent"
-        android:layout_weight="0.9"
+        android:layout_weight="0.6"
         android:orientation="horizontal">
 
-        <ImageView
-            android:id="@+id/user_image"
+        <FrameLayout
             android:layout_width="0dip"
             android:layout_height="match_parent"
-            android:layout_weight="0.9"
-            android:layout_gravity="left|center" />
+            android:layout_weight="0.6"
+            android:layout_gravity="left|center">
+
+            <ImageView
+                android:id="@+id/user_image"
+                android:layout_width="@dimen/dp40"
+                android:layout_height="@dimen/dp40"
+                android:layout_gravity="center_vertical" />
+
+        </FrameLayout>
 
     </LinearLayout>
 
@@ -27,7 +34,7 @@
         android:id="@+id/username"
         android:layout_width="0dip"
         android:layout_height="match_parent"
-        android:layout_weight="3.1"
+        android:layout_weight="3.4"
         android:layout_marginLeft="@dimen/dp5"
         android:layout_marginRight="@dimen/dp5"
         android:paddingLeft="@dimen/dp5"

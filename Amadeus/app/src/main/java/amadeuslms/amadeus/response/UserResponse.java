@@ -10,7 +10,6 @@ public class UserResponse extends GenericResponse {
 
     private UserModel data;
 
-
     public UserModel getData() {
         return data;
     }

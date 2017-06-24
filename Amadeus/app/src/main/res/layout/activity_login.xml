@@ -14,13 +14,21 @@
     tools:context="amadeuslms.amadeus.activity.LoginActivity">
 
     <!-- Login progress -->
-    <ProgressBar
+    <FrameLayout
         android:id="@+id/login_progress"
-        style="?android:attr/progressBarStyleLarge"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:visibility="gone" />
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone">
+
+        <ProgressBar
+            android:id="@+id/progress"
+            style="?android:attr/progressBarStyleLarge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/dp20"
+            android:indeterminateDrawable="@drawable/loading"
+            android:layout_gravity="center" />
+    </FrameLayout>
 
     <ScrollView
         android:id="@+id/login_form"

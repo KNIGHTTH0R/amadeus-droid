@@ -5,4 +5,7 @@
     <color name="btnGreen">#5cb85c</color>
     <color name="colorAccent">#FFFFFF</color>
     <color name="primaryWhite">#F5F5F5</color>
+    <color name="subjectHeader">#0267a4</color>
+    <color name="subjectHeaderInvisible">#BDBDBD</color>
+    <color name="blackTitle">#191919</color>
 </resources>

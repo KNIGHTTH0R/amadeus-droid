@@ -11,13 +11,15 @@
     <string name="error_invalid_password">This password is invalid</string>
     <string name="error_incorrect_password">This password is incorrect</string>
     <string name="error_field_required">This field is required</string>
-    <string name="login_progress">Signing in the account...</string>
+    <string name="action_logout">Logout</string>
 
+    <!-- Messages (Dialog) -->
     <string name="ok">OK</string>
+    <string name="loading_subjects">Loading your subjects...</string>
+    <string name="login_progress">Signing in the account...</string>
     <string name="error_box_title">Something went wrong!</string>
     <string name="error_box_msg">An error has occurred during the processing of your request. Please, try again later.</string>
 
-    <string name="action_logout">Logout</string>
 
     <string name="title_activity_home">HomeActivity</string>
 </resources>

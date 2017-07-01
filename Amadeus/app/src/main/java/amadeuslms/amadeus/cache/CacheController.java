@@ -9,6 +9,7 @@ import android.content.Context;
 public class CacheController {
 
     public static void clearCache(Context context) {
+        SubjectCacheController.removeSubjectCache(context);
         UserCacheController.removeUserCache(context);
         TokenCacheController.removeTokenCache(context);
     }

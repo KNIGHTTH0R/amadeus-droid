@@ -15,5 +15,6 @@
     <string name="error_box_title">Algo deu errado!</string>
     <string name="error_box_msg">Ocorreu um erro durante o processamento da sua requisição. Por favor, tente novamente mais tarde.</string>
 
+    <string name="loading_subjects">Carregando seus assuntos...</string>
     <string name="action_logout">Sair</string>
 </resources>

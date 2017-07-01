@@ -1,6 +1,7 @@
 package amadeuslms.amadeus.utils;
 
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
@@ -15,7 +16,11 @@ import okhttp3.Response;
 public class HttpUtils {
 
     public static String post(String address, String json, String token) throws IOException {
-        OkHttpClient client = new OkHttpClient();
+        OkHttpClient client = new OkHttpClient.Builder()
+                .connectTimeout(30, TimeUnit.SECONDS)
+                .writeTimeout(30, TimeUnit.SECONDS)
+                .readTimeout(30, TimeUnit.SECONDS)
+                .build();
 
         Request.Builder builder = new Request.Builder();
 

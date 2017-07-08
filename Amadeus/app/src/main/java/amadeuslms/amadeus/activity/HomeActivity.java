@@ -10,31 +10,32 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ExpandableListView;
+import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import amadeuslms.amadeus.R;
-import amadeuslms.amadeus.adapters.ExpandableListAdapter;
-import amadeuslms.amadeus.bean.ApplicationProperties;
+import amadeuslms.amadeus.adapters.SubjectAdapter;
 import amadeuslms.amadeus.bo.SubjectBO;
 import amadeuslms.amadeus.cache.CacheController;
 import amadeuslms.amadeus.cache.SubjectCacheController;
@@ -46,11 +47,12 @@ import amadeuslms.amadeus.response.SubjectResponse;
 import amadeuslms.amadeus.utils.CircleTransformUtils;
 import amadeuslms.amadeus.utils.ImageUtils;
 
-public class HomeActivity extends AppCompatActivity {
-    private ExpandableListAdapter listAdapter;
-    private ExpandableListView listView;
+public class HomeActivity extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener, AdapterView.OnItemClickListener {
+    private SwipeRefreshLayout swipeRefreshLayout;
+    private ListView listView;
+    private SubjectAdapter listAdapter;
     private List<SubjectModel> headers;
-    private HashMap<String, List<String>> children;
+    private UserModel user;
 
     private ImageView ivPhoto;
     private TextView tvName;
@@ -83,7 +85,7 @@ public class HomeActivity extends AppCompatActivity {
         actionBar.setCustomView(actionBarCustom, params);
 
         if (UserCacheController.hasUserCache(this)) {
-            UserModel user = UserCacheController.getUserCache(this);
+            user = UserCacheController.getUserCache(this);
 
             tvName = (TextView) actionBarCustom.findViewById(R.id.user_name);
             tvName.setText(user.getDisplayName());
@@ -92,8 +94,8 @@ public class HomeActivity extends AppCompatActivity {
 
             ImageUtils img = new ImageUtils(this);
 
-            if(user.getImage() != null && !user.getImage().equals("") && TokenCacheController.hasTokenCache(this)){
-                String path = TokenCacheController.getTokenCache(this).getWebserver_url() + user.getImage();
+            if(user.getImage_url() != null && !user.getImage_url().equals("") && TokenCacheController.hasTokenCache(this)){
+                String path = TokenCacheController.getTokenCache(this).getWebserver_url() + user.getImage_url();
 
                 Picasso.with(this).load(path).transform(new CircleTransformUtils()).into(ivPhoto);
             }else{
@@ -108,15 +110,19 @@ public class HomeActivity extends AppCompatActivity {
                 }
             }
 
-            listView = (ExpandableListView) findViewById(R.id.subject_list);
+            swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.subject_view);
+            swipeRefreshLayout.setColorSchemeResources(R.color.colorPrimary);
+            swipeRefreshLayout.setOnRefreshListener(this);
+
+            listView = (ListView) findViewById(R.id.subject_list);
+            listView.setOnItemClickListener(this);
 
             if (SubjectCacheController.hasSubjectCache(this)) {
                 headers = SubjectCacheController.getSubjectCache(this).getSubjects();
 
-                removeRequestUser(user);
                 showSubjects();
             } else {
-                new AsyncSubjects(this, user).execute();
+                new AsyncSubjects(this, user, false).execute();
             }
         } else {
             goLogin();
@@ -150,6 +156,23 @@ public class HomeActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public void onRefresh() {
+        new AsyncSubjects(this, user, true).execute();
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        SubjectModel subject = ((SubjectAdapter) listView.getAdapter()).getItem(position);
+
+        if (subject != null) {
+            Intent intent = new Intent(view.getContext(), ParticipantsActivity.class);
+            intent.putExtra(ParticipantsActivity.SUBJECT_NAME, subject.getName());
+            intent.putExtra(ParticipantsActivity.SUBJECT_SLUG, subject.getSlug());
+            startActivity(intent);
+        }
+    }
+
     public void goLogin() {
         Intent intent = new Intent(this, LoginActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -158,37 +181,11 @@ public class HomeActivity extends AppCompatActivity {
         finish();
     }
 
-    private void removeRequestUser(UserModel user) {
-        for (SubjectModel subject : headers) {
-            int pos = -1;
-
-            for (UserModel u : subject.getParticipants()) {
-                if (u.getEmail().equals(user.getEmail())) {
-                    pos = subject.getParticipants().indexOf(u);
-                }
-            }
-
-            if (pos != -1) {
-                subject.getParticipants().remove(pos);
-            }
-        }
-    }
 
     private void showSubjects() {
-        listAdapter = new ExpandableListAdapter(this, headers);
+        listAdapter = new SubjectAdapter(this, headers);
 
         listView.setAdapter(listAdapter);
-
-        listView.setOnGroupExpandListener(new ExpandableListView.OnGroupExpandListener() {
-            @Override
-            public void onGroupExpand(int groupPosition) {
-                for (int i = 0; i < headers.size(); ++i) {
-                    if (i != groupPosition) {
-                        listView.collapseGroup(i);
-                    }
-                }
-            }
-        });
     }
 
     private class AsyncSubjects extends AsyncTask<Void, Void, SubjectResponse> {
@@ -197,17 +194,24 @@ public class HomeActivity extends AppCompatActivity {
         private Context context;
         private UserModel user;
         private String title, message;
+        private boolean isRefresh;
 
-        public AsyncSubjects(Context context, UserModel user) {
+        public AsyncSubjects(Context context, UserModel user, boolean isRefresh) {
             this.context = context;
             this.user = user;
+            this.isRefresh = isRefresh;
         }
 
         @Override
         public void onPreExecute() {
             super.onPreExecute();
 
-            progressDialog = ProgressDialog.show(context, null, getString(R.string.loading_subjects));
+            if (isRefresh) {
+                swipeRefreshLayout.setEnabled(false);
+                swipeRefreshLayout.setRefreshing(true);
+            } else {
+                progressDialog = ProgressDialog.show(context, null, getString(R.string.loading_subjects));
+            }
         }
 
         @Override
@@ -226,14 +230,18 @@ public class HomeActivity extends AppCompatActivity {
         public void onPostExecute(SubjectResponse subjectResponse) {
             super.onPostExecute(subjectResponse);
 
-            progressDialog.dismiss();
+            if (isRefresh) {
+                swipeRefreshLayout.setEnabled(true);
+                swipeRefreshLayout.setRefreshing(false);
+            } else {
+                progressDialog.dismiss();
+            }
 
             if (subjectResponse != null) {
                 if (subjectResponse.getSuccess() && subjectResponse.getNumber() == 1) {
                     SubjectCacheController.setSubjectCache(context, subjectResponse.getData());
                     headers = subjectResponse.getData().getSubjects();
 
-                    removeRequestUser(this.user);
                     showSubjects();
                 } else if (!TextUtils.isEmpty(subjectResponse.getTitle()) && !TextUtils.isEmpty(subjectResponse.getMessage())){
                     title = subjectResponse.getTitle();

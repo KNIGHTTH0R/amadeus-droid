@@ -31,7 +31,17 @@
         <activity
             android:name=".activity.HomeActivity"
             android:label="@string/title_activity_home"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".activity.ParticipantsActivity"
+            android:label="@string/title_activity_participants"
+            android:theme="@style/AppTheme.NoActionBar">
+
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="amadeuslms.amadeus.activity.HomeActivity" />
+
+        </activity>
     </application>
 
 </manifest>

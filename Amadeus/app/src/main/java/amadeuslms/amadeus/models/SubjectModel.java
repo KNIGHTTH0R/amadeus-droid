@@ -10,7 +10,6 @@ public class SubjectModel {
 
     private String name, slug;
     private boolean visible;
-    private List<UserModel> participants;
 
     public String getName() {
         return name;
@@ -34,13 +33,5 @@ public class SubjectModel {
 
     public void setVisible(boolean visible) {
         this.visible = visible;
-    }
-
-    public List<UserModel> getParticipants() {
-        return participants;
-    }
-
-    public void setParticipants(List<UserModel> participants) {
-        this.participants = participants;
     }
 }

@@ -8,7 +8,7 @@ import android.text.TextUtils;
 
 public class UserModel {
 
-    private String email, social_name, username, last_name, image, description, last_update, date_created;
+    private String email, social_name, username, last_name, image_url, description, last_update, date_created;
     private boolean is_staff, is_active;
 
     public String getEmail() {
@@ -43,12 +43,12 @@ public class UserModel {
         this.last_name = last_name;
     }
 
-    public String getImage() {
-        return image;
+    public String getImage_url() {
+        return image_url;
     }
 
-    public void setImage(String image) {
-        this.image = image;
+    public void setImage_url(String image_url) {
+        this.image_url = image_url;
     }
 
     public String getDescription() {

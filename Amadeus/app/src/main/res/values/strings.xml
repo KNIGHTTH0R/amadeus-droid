@@ -16,10 +16,39 @@
     <!-- Messages (Dialog) -->
     <string name="ok">OK</string>
     <string name="loading_subjects">Loading your subjects...</string>
+    <string name="loading_participants">Loading subject participants...</string>
     <string name="login_progress">Signing in the account...</string>
     <string name="error_box_title">Something went wrong!</string>
     <string name="error_box_msg">An error has occurred during the processing of your request. Please, try again later.</string>
 
-
     <string name="title_activity_home">HomeActivity</string>
+    <string name="title_activity_participants">ParticipantsActivity</string>
+
+    <!-- FontAwesome Icons -->
+    <string name="fa_users" translatable="false">&#xf0c0;</string>
+    <string name="fa_graduation_cap" translatable="false">&#xf19d;</string>
+    <string name="fa_male" translatable="false">&#xf183;</string>
+    <string name="fa_search" translatable="false">&#xf002;</string>
+    <string name="fa_briefcase" translatable="false">&#xf0b1;</string>
+    <string name="fa_comments" translatable="false">&#xf086;</string>
+    <string name="fa_comments_o" translatable="false">&#xf0e6;</string>
+    <string name="fa_comment_o" translatable="false">&#xf0e5;</string>
+    <string name="fa_user_plus" translatable="false">&#xf234;</string>
+    <string name="fa_user_times" translatable="false">&#xf235;</string>
+    <string name="fa_user" translatable="false">&#xf007;</string>
+    <string name="fa_cog" translatable="false">&#xf013;</string>
+    <string name="fa_plus" translatable="false">&#xf067;</string>
+    <string name="fa_map_marker" translatable="false">&#xf041;</string>
+    <string name="fa_map_signs" translatable="false">&#xf277;</string>
+    <string name="fa_camera" translatable="false">&#xf030;</string>
+    <string name="fa_file" translatable="false">&#xf15b;</string>
+    <string name="fa_file_o" translatable="false">&#xf016;</string>
+    <string name="fa_angle_right" translatable="false">&#xf105;</string>
+    <string name="fa_times" translatable="false">&#xf00d;</string>
+    <string name="fa_trash" translatable="false">&#xf1f8;</string>
+    <string name="fa_send" translatable="false">&#xf1d8;</string>
+    <string name="fa_check" translatable="false">&#xf00c;</string>
+    <string name="fa_linkedin_square" translatable="false">&#xf08c;</string>
+    <string name="fa_pencil" translatable="false">&#xf040;</string>
+    <!-- End FontAwesome Icons -->
 </resources>

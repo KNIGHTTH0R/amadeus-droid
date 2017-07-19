@@ -22,4 +22,45 @@
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
+    <!-- Chat Styles -->
+    <style name="msgSender">
+        <item name="android:background">@drawable/message_box</item>
+        <item name="android:layout_width">0dip</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:layout_alignParentLeft">true</item>
+        <item name="android:layout_toLeftOf">@+id/sender_btn</item>
+        <item name="android:layout_marginRight">@dimen/dp5</item>
+        <item name="android:padding">@dimen/dp1</item>
+    </style>
+
+    <style name="msgSender.Input">
+        <item name="android:background">@drawable/textarea</item>
+        <item name="android:maxLines">4</item>
+        <item name="android:state_multiline">true</item>
+        <item name="android:padding">@dimen/dp8</item>
+        <item name="android:layout_marginRight">@dimen/dp5</item>
+        <item name="android:layout_gravity">bottom</item>
+        <item name="android:hint">@string/chat_sender_hint</item>
+        <item name="android:inputType">textCapSentences|textMultiLine</item>
+        <item name="android:textSize">@dimen/sp14</item>
+        <item name="android:minHeight">@dimen/dp50</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:isScrollContainer">true</item>
+        <item name="android:scrollbars">vertical</item>
+    </style>
+
+    <style name="msgSenderBtn">
+        <item name="android:background">@drawable/message_btn</item>
+        <item name="android:textColor">@color/primaryWhite</item>
+        <item name="android:textSize">@dimen/sp18</item>
+        <item name="android:padding">@dimen/dp5</item>
+        <item name="android:layout_height">@dimen/dp50</item>
+        <item name="android:layout_width">@dimen/dp50</item>
+        <item name="android:layout_gravity">bottom</item>
+        <item name="android:gravity">center</item>
+        <item name="android:layout_alignParentRight">true</item>
+        <item name="android:layout_alignBottom">@id/sender_section</item>
+    </style>
 </resources>

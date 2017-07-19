@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/content_chat"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context="amadeuslms.amadeus.activity.ChatActivity"
+    tools:showIn="@layout/activity_chat">
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/chat_recycler"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/lightGray"
+        android:layout_above="@+id/sender_container"
+        android:scrollbars="vertical" />
+
+    <FrameLayout
+        android:id="@+id/chat_loading"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone">
+
+        <ProgressBar
+            android:layout_width="@dimen/dp40"
+            android:layout_height="@dimen/dp40"
+            android:layout_gravity="center" />
+
+    </FrameLayout>
+
+    <LinearLayout
+        android:id="@+id/sender_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:background="@color/lightGray"
+        android:orientation="horizontal">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="@dimen/dp5">
+
+            <RelativeLayout
+                android:id="@+id/sender_section"
+                style="@style/msgSender">
+
+                <EditText
+                    android:id="@+id/sender_msg"
+                    style="@style/msgSender.Input" />
+
+                <Button
+                    android:id="@+id/sender_img"
+                    android:layout_width="@dimen/dp30"
+                    android:layout_height="@dimen/dp30"
+                    android:layout_alignBottom="@+id/sender_msg"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginRight="@dimen/dp8"
+                    android:layout_marginBottom="@dimen/dp8"
+                    android:background="@android:color/transparent"
+                    android:textColor="@color/subjectHeaderInvisible"
+                    android:textSize="@dimen/sp18"
+                    android:text="@string/fa_camera" />
+
+            </RelativeLayout>
+
+            <Button
+                android:id="@+id/sender_btn"
+                style="@style/msgSenderBtn"
+                android:text="@string/fa_send" />
+
+        </RelativeLayout>
+
+    </LinearLayout>
+
+</RelativeLayout>

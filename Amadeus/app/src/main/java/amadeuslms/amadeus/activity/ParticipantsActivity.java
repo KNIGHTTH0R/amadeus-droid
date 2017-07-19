@@ -16,6 +16,7 @@ import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 
@@ -28,7 +29,7 @@ import amadeuslms.amadeus.cache.UserCacheController;
 import amadeuslms.amadeus.models.UserModel;
 import amadeuslms.amadeus.response.ParticipantsResponse;
 
-public class ParticipantsActivity extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener {
+public class ParticipantsActivity extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener, AdapterView.OnItemClickListener {
     private SwipeRefreshLayout swipeRefreshLayout;
     private ListView listView;
 
@@ -42,8 +43,6 @@ public class ParticipantsActivity extends AppCompatActivity implements SwipeRefr
     private List<UserModel> participants;
 
     private ActionBar actionBar;
-    private ActionBar.LayoutParams params;
-    private LinearLayout actionBarCustom;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,6 +70,7 @@ public class ParticipantsActivity extends AppCompatActivity implements SwipeRefr
                 swipeRefreshLayout.setOnRefreshListener(this);
 
                 listView = (ListView) findViewById(R.id.participants_list);
+                listView.setOnItemClickListener(this);
 
                 new AsyncParticipants(this, user, subject_slug, false).execute();
             } else {
@@ -91,6 +91,16 @@ public class ParticipantsActivity extends AppCompatActivity implements SwipeRefr
     @Override
     public void onRefresh() {
         new AsyncParticipants(this, user, subject_slug, true).execute();
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        UserModel participant = ((ParticipantsAdapter) listView.getAdapter()).getItem(position);
+
+        if (participant != null) {
+            Intent intent = new Intent(view.getContext(), ChatActivity.class);
+            startActivity(intent);
+        }
     }
 
     public void goLogin() {

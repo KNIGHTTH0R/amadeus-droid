@@ -63,7 +63,7 @@
                     android:layout_marginRight="@dimen/dp8"
                     android:layout_marginBottom="@dimen/dp8"
                     android:background="@android:color/transparent"
-                    android:textColor="@color/subjectHeaderInvisible"
+                    android:textColor="@color/primaryGray"
                     android:textSize="@dimen/sp18"
                     android:text="@string/fa_camera" />
 

@@ -1,15 +1,46 @@
 package amadeuslms.amadeus.models;
 
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.text.TextUtils;
 
 /**
  * Created by zambom on 16/06/17.
  */
 
-public class UserModel {
+public class UserModel implements Parcelable {
 
     private String email, social_name, username, last_name, image_url, description, last_update, date_created;
     private boolean is_staff, is_active;
+
+    public UserModel(Parcel in) {
+        String[] data = new String[10];
+
+        in.readStringArray(data);
+
+        this.setEmail(data[0]);
+        this.setSocial_name(data[1]);
+        this.setUsername(data[2]);
+        this.setLast_name(data[3]);
+        this.setImage_url(data[4]);
+        this.setDescription(data[5]);
+        this.setLast_update(data[6]);
+        this.setDate_created(data[7]);
+        this.setIs_staff(Boolean.parseBoolean(data[8]));
+        this.setIs_active(Boolean.parseBoolean(data[9]));
+    }
+
+    public static final Parcelable.Creator<UserModel> CREATOR = new Parcelable.Creator<UserModel>() {
+        @Override
+        public UserModel createFromParcel(Parcel source) {
+            return new UserModel(source);
+        }
+
+        @Override
+        public UserModel[] newArray(int size) {
+            return new UserModel[size];
+        }
+    };
 
     public String getEmail() {
         return email;
@@ -97,5 +128,26 @@ public class UserModel {
         }
 
         return social_name;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeStringArray(new String[] {
+                this.getEmail(),
+                this.getSocial_name(),
+                this.getUsername(),
+                this.getLast_name(),
+                this.getImage_url(),
+                this.getDescription(),
+                this.getLast_update(),
+                this.getDate_created(),
+                String.valueOf(this.is_staff()),
+                String.valueOf(this.is_active())
+        });
     }
 }

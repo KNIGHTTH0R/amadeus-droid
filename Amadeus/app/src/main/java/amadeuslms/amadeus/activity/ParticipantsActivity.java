@@ -99,6 +99,7 @@ public class ParticipantsActivity extends AppCompatActivity implements SwipeRefr
 
         if (participant != null) {
             Intent intent = new Intent(view.getContext(), ChatActivity.class);
+            intent.putExtra(ChatActivity.USER_TO, participant);
             startActivity(intent);
         }
     }
@@ -133,7 +134,7 @@ public class ParticipantsActivity extends AppCompatActivity implements SwipeRefr
         }
 
         @Override
-        public void onPreExecute() {
+        protected void onPreExecute() {
             super.onPreExecute();
 
             if (isRefresh) {
@@ -145,7 +146,7 @@ public class ParticipantsActivity extends AppCompatActivity implements SwipeRefr
         }
 
         @Override
-        public ParticipantsResponse doInBackground(Void... params) {
+        protected ParticipantsResponse doInBackground(Void... params) {
             try {
                 return new ParticipantsBO().get_participants(context, user, slug);
             } catch (Exception e) {
@@ -157,7 +158,7 @@ public class ParticipantsActivity extends AppCompatActivity implements SwipeRefr
         }
 
         @Override
-        public void onPostExecute(ParticipantsResponse participantsResponse) {
+        protected void onPostExecute(ParticipantsResponse participantsResponse) {
             super.onPostExecute(participantsResponse);
 
             if (isRefresh) {

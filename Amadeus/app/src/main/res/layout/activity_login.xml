@@ -126,7 +126,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:background="@color/btnGreen"
+                android:background="@color/primaryGreen"
                 android:textColor="@color/primaryWhite"
                 android:text="@string/action_sign_in"
                 android:textStyle="bold" />

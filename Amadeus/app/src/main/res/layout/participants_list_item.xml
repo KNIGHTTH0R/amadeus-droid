@@ -20,6 +20,6 @@
         android:paddingLeft="?android:attr/expandableListPreferredChildPaddingLeft"
         android:textSize="@dimen/sp14"
         android:textStyle="bold"
-        android:textColor="@color/blackTitle" />
+        android:textColor="@color/primaryBlack" />
 
 </LinearLayout>

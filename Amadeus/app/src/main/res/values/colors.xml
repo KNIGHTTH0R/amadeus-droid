@@ -2,11 +2,13 @@
 <resources>
     <color name="colorPrimary">#009688</color>
     <color name="colorPrimaryDark">#00695C</color>
-    <color name="btnGreen">#5cb85c</color>
+    <color name="primaryGreen">#5cb85c</color>
+    <color name="lighterGreen">#8ffc93</color>
     <color name="colorAccent">#FFFFFF</color>
     <color name="primaryWhite">#F5F5F5</color>
     <color name="lightGray">#D5D5D5</color>
-    <color name="subjectHeader">#0267a4</color>
-    <color name="subjectHeaderInvisible">#BDBDBD</color>
-    <color name="blackTitle">#191919</color>
+    <color name="primaryBlue">#0267a4</color>
+    <color name="lighterBlue">#91d8ff</color>
+    <color name="primaryGray">#BDBDBD</color>
+    <color name="primaryBlack">#191919</color>
 </resources>

@@ -23,6 +23,31 @@
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
     <!-- Chat Styles -->
+    <style name="msgDate">
+        <item name="android:background">@drawable/message_date</item>
+        <item name="android:textColor">@color/primaryWhite</item>
+        <item name="android:textSize">@dimen/sp14</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:paddingBottom">@dimen/dp3</item>
+        <item name="android:paddingTop">@dimen/dp3</item>
+        <item name="android:paddingLeft">@dimen/dp8</item>
+        <item name="android:paddingRight">@dimen/dp8</item>
+    </style>
+
+    <style name="msgSent">
+        <item name="android:background">@drawable/message_sent</item>
+        <item name="android:layout_gravity">right</item>
+        <item name="android:layout_marginLeft">@dimen/dp55</item>
+        <item name="android:padding">@dimen/dp8</item>
+    </style>
+
+    <style name="msgReceived">
+        <item name="android:background">@drawable/message_received</item>
+        <item name="android:layout_gravity">left</item>
+        <item name="android:layout_marginRight">@dimen/dp55</item>
+        <item name="android:padding">@dimen/dp8</item>
+    </style>
+
     <style name="msgSender">
         <item name="android:background">@drawable/message_box</item>
         <item name="android:layout_width">0dip</item>

@@ -1,7 +1,6 @@
 package amadeuslms.amadeus.adapters;
 
 import android.content.Context;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -54,9 +53,9 @@ public class SubjectAdapter extends BaseAdapter {
         TypefacesUtil.setFontAwesome(context, viewHolder.tvArrow);
 
         if (!model.isVisible()) {
-            viewHolder.itemView.setBackgroundColor(this.context.getResources().getColor(R.color.subjectHeaderInvisible));
+            viewHolder.itemView.setBackgroundColor(this.context.getResources().getColor(R.color.primaryGray));
         } else {
-            viewHolder.itemView.setBackgroundColor(this.context.getResources().getColor(R.color.subjectHeader));
+            viewHolder.itemView.setBackgroundColor(this.context.getResources().getColor(R.color.primaryBlue));
         }
 
         return convertView;

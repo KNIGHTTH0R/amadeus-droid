@@ -45,13 +45,12 @@
                 style="@style/msgReceived"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:orientation="vertical">
 
                 <FrameLayout
                     android:id="@+id/received_img_container"
-                    android:layout_width="0dip"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1">
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
 
                     <ImageView
                         android:id="@+id/received_img"
@@ -70,21 +69,21 @@
 
                 <TextView
                     android:id="@+id/received_text"
-                    android:layout_width="0dip"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:textColor="@color/primaryWhite"
+                    android:textColor="@color/primaryBlack"
                     android:textSize="@dimen/sp14" />
 
                 <TextView
                     android:id="@+id/received_date"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="@dimen/dp5"
                     android:layout_marginRight="@dimen/dp5"
-                    android:textColor="@color/primaryWhite"
+                    android:textColor="@color/darkerGray"
                     android:textSize="@dimen/sp10"
-                    android:layout_gravity="bottom" />
+                    android:gravity="right"
+                    android:layout_gravity="bottom|right" />
 
             </LinearLayout>
 
@@ -100,13 +99,12 @@
                 style="@style/msgSent"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:orientation="vertical">
 
                 <FrameLayout
                     android:id="@+id/sent_img_container"
-                    android:layout_width="0dip"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1">
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
 
                     <ImageView
                         android:id="@+id/sent_img"
@@ -125,21 +123,21 @@
 
                 <TextView
                     android:id="@+id/sent_text"
-                    android:layout_width="0dip"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
                     android:textColor="@color/primaryBlack"
                     android:textSize="@dimen/sp14" />
 
                 <TextView
                     android:id="@+id/sent_date"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="@dimen/dp5"
                     android:layout_marginRight="@dimen/dp5"
-                    android:textColor="@color/primaryBlack"
+                    android:textColor="@color/darkerGray"
                     android:textSize="@dimen/sp10"
-                    android:layout_gravity="bottom" />
+                    android:gravity="right"
+                    android:layout_gravity="bottom|right" />
 
             </LinearLayout>
 

@@ -6,7 +6,7 @@ package amadeuslms.amadeus.models;
 
 public class MessageModel {
 
-    private String text, image, create_date;
+    private String text, image_url, create_date;
     private UserModel user;
     private SubjectModel subject;
 
@@ -18,12 +18,12 @@ public class MessageModel {
         this.text = text;
     }
 
-    public String getImage() {
-        return image;
+    public String getImage_url() {
+        return image_url;
     }
 
-    public void setImage(String image) {
-        this.image = image;
+    public void setImage_url(String image_url) {
+        this.image_url = image_url;
     }
 
     public String getCreate_date() {

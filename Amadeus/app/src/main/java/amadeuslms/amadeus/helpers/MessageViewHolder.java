@@ -19,7 +19,7 @@ public class MessageViewHolder extends RecyclerView.ViewHolder {
 
     private Context context;
 
-    public TextView tvMsgSent, tvMsgReceived, tvDateSent, tvDateReceived;
+    public TextView tvMsgSent, tvMsgReceived, tvDateSent, tvDateReceived, tvDate;
     public ImageView ivImgSent, ivImgReceived;
     public ProgressBar pbSent, pbReceived;
     public LinearLayout llDate;
@@ -34,6 +34,7 @@ public class MessageViewHolder extends RecyclerView.ViewHolder {
         tvMsgReceived   =   (TextView)      itemView.findViewById(R.id.received_text);
         tvDateSent      =   (TextView)      itemView.findViewById(R.id.sent_date);
         tvDateReceived  =   (TextView)      itemView.findViewById(R.id.received_date);
+        tvDate          =   (TextView)      itemView.findViewById(R.id.msg_date);
         ivImgSent       =   (ImageView)     itemView.findViewById(R.id.sent_img);
         ivImgReceived   =   (ImageView)     itemView.findViewById(R.id.received_img);
         pbSent          =   (ProgressBar)   itemView.findViewById(R.id.sent_progress);

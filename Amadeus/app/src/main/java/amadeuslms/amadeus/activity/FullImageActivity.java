@@ -7,6 +7,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
@@ -22,16 +23,19 @@ import amadeuslms.amadeus.utils.ImageUtils;
 public class FullImageActivity extends AppCompatActivity {
 
     public static final String FULL_IMAGE = "FULL_IMAGE";
+    public static final String SENDER = "SENDER";
 
     private ViewPager pager;
     private ImageView ivImg;
 
-    private String resource;
+    private String resource, sender;
 
     private ActionBar actionBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        setTheme(R.style.AppTheme_Dark);
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_fullimage);
 
@@ -48,8 +52,9 @@ public class FullImageActivity extends AppCompatActivity {
             pager = (ViewPager) findViewById(R.id.pager);
             ivImg = (ImageView) findViewById(R.id.full_img);
 
-            if (intent.hasExtra(FULL_IMAGE)) {
+            if (intent.hasExtra(FULL_IMAGE) && intent.hasExtra(SENDER)) {
                 resource = intent.getStringExtra(FULL_IMAGE);
+                sender = intent.getStringExtra(SENDER);
 
                 final Point displaySize = ImageUtils.getDisplaySize(getWindowManager().getDefaultDisplay());
                 final int size = (int) Math.ceil(Math.sqrt(displaySize.x * displaySize.y));
@@ -60,6 +65,8 @@ public class FullImageActivity extends AppCompatActivity {
                     Picasso.with(this).load(resource).resize(size, size).centerInside().into(ivImg);
                 }
 
+                actionBar.setTitle(sender);
+
                 ivImg.setVisibility(ImageView.VISIBLE);
                 pager.setVisibility(ViewPager.GONE);
             } else {
@@ -68,5 +75,14 @@ public class FullImageActivity extends AppCompatActivity {
         } else {
             finish();
         }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item){
+        if(item.getItemId() == android.R.id.home){
+            finish();
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 }

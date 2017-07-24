@@ -23,9 +23,11 @@ import android.widget.ListView;
 import java.util.List;
 
 import amadeuslms.amadeus.R;
+import amadeuslms.amadeus.adapters.ChatAdapter;
 import amadeuslms.amadeus.adapters.ParticipantsAdapter;
 import amadeuslms.amadeus.bo.ParticipantsBO;
 import amadeuslms.amadeus.cache.UserCacheController;
+import amadeuslms.amadeus.models.SubjectModel;
 import amadeuslms.amadeus.models.UserModel;
 import amadeuslms.amadeus.response.ParticipantsResponse;
 
@@ -35,9 +37,9 @@ public class ParticipantsActivity extends AppCompatActivity implements SwipeRefr
 
     private ParticipantsAdapter participantsAdapter;
     private UserModel user;
+    private SubjectModel subject;
 
-    public static final String SUBJECT_NAME = "SUBJECT_NAME";
-    public static final String SUBJECT_SLUG = "SUBJECT_SLUG";
+    public static final String SUBJECT = "SUBJECT";
 
     private String subject_slug;
     private List<UserModel> participants;
@@ -57,10 +59,12 @@ public class ParticipantsActivity extends AppCompatActivity implements SwipeRefr
 
         Intent intent = getIntent();
 
-        if(intent != null && intent.hasExtra(SUBJECT_SLUG) && intent.hasExtra(SUBJECT_NAME)) {
-            actionBar.setTitle(intent.getCharSequenceExtra(SUBJECT_NAME));
+        if(intent != null && intent.hasExtra(SUBJECT)) {
+            subject = intent.getParcelableExtra(SUBJECT);
 
-            subject_slug = intent.getCharSequenceExtra(SUBJECT_SLUG).toString();
+            actionBar.setTitle(subject.getName());
+
+            subject_slug = subject.getSlug();
 
             if (UserCacheController.hasUserCache(this)) {
                 user = UserCacheController.getUserCache(this);
@@ -100,6 +104,7 @@ public class ParticipantsActivity extends AppCompatActivity implements SwipeRefr
         if (participant != null) {
             Intent intent = new Intent(view.getContext(), ChatActivity.class);
             intent.putExtra(ChatActivity.USER_TO, participant);
+            intent.putExtra(ChatActivity.SUBJECT, subject);
             startActivity(intent);
         }
     }

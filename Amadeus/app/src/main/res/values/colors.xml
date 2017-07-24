@@ -12,4 +12,26 @@
     <color name="primaryGray">#BDBDBD</color>
     <color name="primaryBlack">#191919</color>
     <color name="darkerGray">#837e7e</color>
+
+    <!-- Transparency Colors -->
+    <color name="black95_transparency">#F2000000</color>
+    <color name="black90_transparency">#E6000000</color>
+    <color name="black85_transparency">#D9000000</color>
+    <color name="black80_transparency">#CC000000</color>
+    <color name="black75_transparency">#BF000000</color>
+    <color name="black70_transparency">#B3000000</color>
+    <color name="black65_transparency">#A6000000</color>
+    <color name="black60_transparency">#99000000</color>
+    <color name="black55_transparency">#8C000000</color>
+    <color name="black50_transparency">#80000000</color>
+    <color name="black45_transparency">#73000000</color>
+    <color name="black40_transparency">#66000000</color>
+    <color name="black35_transparency">#59000000</color>
+    <color name="black30_transparency">#4D000000</color>
+    <color name="black25_transparency">#40000000</color>
+    <color name="black20_transparency">#33000000</color>
+    <color name="black15_transparency">#26000000</color>
+    <color name="black10_transparency">#1A000000</color>
+    <color name="black5_transparency">#0D000000</color>
+    <color name="black0_transparency">#00000000</color>x
 </resources>

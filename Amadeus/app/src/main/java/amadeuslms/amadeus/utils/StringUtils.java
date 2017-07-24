@@ -10,6 +10,6 @@ import android.text.Html;
 public class StringUtils {
 
     public static String stripTags(String html) {
-        return Html.fromHtml(html).toString();
+        return Html.fromHtml(html).toString().replaceAll("\n", "").trim();
     }
 }

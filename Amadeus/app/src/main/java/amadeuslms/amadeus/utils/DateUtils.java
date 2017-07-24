@@ -17,49 +17,11 @@ import amadeuslms.amadeus.R;
 
 public class DateUtils {
 
-    public static String dateMsg(Context context, String date){
-        try {
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-            sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
-            Date date_time = sdf.parse(date);
+    public static String currentDate(){
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+        sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
 
-            Calendar this_date = Calendar.getInstance();
-            this_date.setTime(date_time);
-
-            this_date.set(Calendar.HOUR_OF_DAY, 0);
-            this_date.set(Calendar.MINUTE, 0);
-            this_date.set(Calendar.SECOND, 0);
-            this_date.set(Calendar.MILLISECOND, 0);
-
-            Calendar yesterday = Calendar.getInstance();
-            yesterday.add(Calendar.DAY_OF_MONTH, -1);
-
-            yesterday.set(Calendar.HOUR_OF_DAY, 0);
-            yesterday.set(Calendar.MINUTE, 0);
-            yesterday.set(Calendar.SECOND, 0);
-            yesterday.set(Calendar.MILLISECOND, 0);
-
-            Calendar today = Calendar.getInstance();
-            today.set(Calendar.HOUR_OF_DAY, 0);
-            today.set(Calendar.MINUTE, 0);
-            today.set(Calendar.SECOND, 0);
-            today.set(Calendar.MILLISECOND, 0);
-
-            if(this_date.equals(today)){
-                SimpleDateFormat out = new SimpleDateFormat("HH:mm");
-                return out.format(date_time);
-            } else if(this_date.equals(yesterday)){
-                return "yesterday";
-            } else{
-                SimpleDateFormat out = new SimpleDateFormat("yyyy-MM-dd");
-                return out.format(date_time);
-            }
-
-        }catch (ParseException e){
-            System.out.println(e.getMessage());
-        }
-
-        return null;
+        return sdf.format(new Date());
     }
 
     public static String getHour(String date){

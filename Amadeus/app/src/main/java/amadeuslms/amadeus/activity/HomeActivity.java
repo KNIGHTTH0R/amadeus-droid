@@ -35,6 +35,7 @@ import java.io.InputStream;
 import java.util.List;
 
 import amadeuslms.amadeus.R;
+import amadeuslms.amadeus.adapters.ParticipantsAdapter;
 import amadeuslms.amadeus.adapters.SubjectAdapter;
 import amadeuslms.amadeus.bo.SubjectBO;
 import amadeuslms.amadeus.cache.CacheController;
@@ -167,8 +168,7 @@ public class HomeActivity extends AppCompatActivity implements SwipeRefreshLayou
 
         if (subject != null) {
             Intent intent = new Intent(view.getContext(), ParticipantsActivity.class);
-            intent.putExtra(ParticipantsActivity.SUBJECT_NAME, subject.getName());
-            intent.putExtra(ParticipantsActivity.SUBJECT_SLUG, subject.getSlug());
+            intent.putExtra(ParticipantsActivity.SUBJECT, subject);
             startActivity(intent);
         }
     }

@@ -127,6 +127,7 @@ public class ChatAdapter extends RecyclerView.Adapter<MessageViewHolder> {
                         public void onClick(View v) {
                             Intent intent = new Intent(v.getContext(), FullImageActivity.class);
                             intent.putExtra(FullImageActivity.FULL_IMAGE, path);
+                            intent.putExtra(FullImageActivity.SENDER, message.getUser().getDisplayName());
 
                             v.getContext().startActivity(intent);
                         }
@@ -142,7 +143,7 @@ public class ChatAdapter extends RecyclerView.Adapter<MessageViewHolder> {
                 holder.tvDateReceived.setText(DateUtils.getHour(message.getCreate_date()));
 
                 if (message.getImage_url() != null && !message.getImage_url().equals("") && TokenCacheController.hasTokenCache(context)) {
-                    String path = TokenCacheController.getTokenCache(context).getWebserver_url() + message.getImage_url();
+                    final String path = TokenCacheController.getTokenCache(context).getWebserver_url() + message.getImage_url();
 
                     final ProgressBar progressBar = holder.pbReceived;
 
@@ -177,6 +178,17 @@ public class ChatAdapter extends RecyclerView.Adapter<MessageViewHolder> {
                         });
                     }
 
+                    holder.ivImgReceived.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Intent intent = new Intent(v.getContext(), FullImageActivity.class);
+                            intent.putExtra(FullImageActivity.FULL_IMAGE, path);
+                            intent.putExtra(FullImageActivity.SENDER, message.getUser().getDisplayName());
+
+                            v.getContext().startActivity(intent);
+                        }
+                    });
+
                     holder.flImgReceived.setVisibility(FrameLayout.VISIBLE);
                 } else {
                     holder.flImgReceived.setVisibility(FrameLayout.GONE);
@@ -188,5 +200,12 @@ public class ChatAdapter extends RecyclerView.Adapter<MessageViewHolder> {
     @Override
     public int getItemCount() {
         return messageList != null ? messageList.size() : 0;
+    }
+
+    public void addListItem(MessageModel msg, int position){
+        if(!messageList.contains(msg)) {
+            messageList.add(position, msg);
+            notifyItemInserted(position);
+        }
     }
 }

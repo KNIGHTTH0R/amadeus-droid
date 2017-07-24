@@ -21,6 +21,8 @@ import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -37,23 +39,28 @@ import amadeuslms.amadeus.bo.MessageBO;
 import amadeuslms.amadeus.cache.TokenCacheController;
 import amadeuslms.amadeus.cache.UserCacheController;
 import amadeuslms.amadeus.models.MessageModel;
+import amadeuslms.amadeus.models.SubjectModel;
 import amadeuslms.amadeus.models.UserModel;
 import amadeuslms.amadeus.response.MessageResponse;
 import amadeuslms.amadeus.utils.CircleTransformUtils;
+import amadeuslms.amadeus.utils.DateUtils;
 import amadeuslms.amadeus.utils.ImageUtils;
 import amadeuslms.amadeus.utils.TypefacesUtil;
 
-public class ChatActivity extends AppCompatActivity {
+public class ChatActivity extends AppCompatActivity implements View.OnClickListener {
 
     public static final String USER_TO = "USER_TO";
+    public static final String SUBJECT = "SUBJECT";
 
     private ChatAdapter adapter;
     private RecyclerView recyclerView;
 
     private UserModel user, user_to;
+    private SubjectModel subject;
     private List<MessageModel> messageList;
 
     private TextView tvUser;
+    private EditText etMsg;
     private ImageView ivImg;
     private Button btnSend, btnImg;
 
@@ -72,8 +79,9 @@ public class ChatActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
 
-        if (intent != null && intent.hasExtra(USER_TO)) {
+        if (intent != null && intent.hasExtra(USER_TO) && intent.hasExtra(SUBJECT)) {
             user_to = intent.getParcelableExtra(USER_TO);
+            subject = intent.getParcelableExtra(SUBJECT);
 
             actionBar = getSupportActionBar();
             actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
@@ -122,10 +130,13 @@ public class ChatActivity extends AppCompatActivity {
             actionBar.setCustomView(actionBarCustom, params);
             toolbar.setContentInsetsAbsolute(0, 0);
 
+            etMsg = (EditText) findViewById(R.id.sender_msg);
             btnSend = (Button) findViewById(R.id.sender_btn);
             btnImg = (Button) findViewById(R.id.sender_img);
             TypefacesUtil.setFontAwesome(this, btnSend);
             TypefacesUtil.setFontAwesome(this, btnImg);
+
+            btnSend.setOnClickListener(this);
 
             recyclerView    = (RecyclerView)    findViewById(R.id.chat_recycler);
 
@@ -183,6 +194,25 @@ public class ChatActivity extends AppCompatActivity {
         finish();
     }
 
+    @Override
+    public void onClick(View v) {
+        if (v.getId() == btnSend.getId()) {
+            String text = etMsg.getText().toString().trim();
+            if (!text.isEmpty()) {
+                etMsg.setEnabled(false);
+                btnSend.setEnabled(false);
+
+                MessageModel message = new MessageModel();
+                message.setText(text);
+                message.setUser(user);
+                message.setSubject(subject);
+                message.setCreate_date(DateUtils.currentDate());
+
+                new SendMessage(this, user_to, message).execute();
+            }
+        }
+    }
+
     private class LoadChat extends AsyncTask<Void, Void, MessageResponse> {
         private Context context;
         private UserModel user,  user_to;
@@ -223,6 +253,81 @@ public class ChatActivity extends AppCompatActivity {
 
                     recyclerView.setAdapter(adapter);
                 } else if (!TextUtils.isEmpty(messageResponse.getTitle()) && !TextUtils.isEmpty(messageResponse.getMessage())){
+                    title = messageResponse.getTitle();
+                    message = messageResponse.getMessage();
+                }
+            }
+
+            if(!TextUtils.isEmpty(title) && !TextUtils.isEmpty(message)){
+                AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                builder.setTitle(title);
+                builder.setMessage(message);
+
+                builder.setPositiveButton(getResources().getString(R.string.ok), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+
+                builder.create().show();
+            }
+        }
+    }
+
+    private class SendMessage extends AsyncTask<Void, Void, MessageResponse> {
+
+        private Context context;
+        private MessageModel msg;
+        private UserModel user;
+        private String title, message;
+
+        public SendMessage(Context context, UserModel user, MessageModel msg) {
+            this.context = context;
+            this.user = user;
+            this.msg = msg;
+        }
+
+        @Override
+        protected void onPreExecute(){
+            super.onPreExecute();
+
+            //flLoading.setVisibility(FrameLayout.VISIBLE);
+            etMsg.setEnabled(false);
+            btnSend.setEnabled(false);
+            btnImg.setEnabled(false);
+        }
+
+        @Override
+        protected MessageResponse doInBackground(Void... params) {
+            try {
+                return new MessageBO().send_message(context, user, msg);
+            } catch (Exception e) {
+                title = context.getString(R.string.error_box_title);
+                message = context.getString(R.string.error_box_msg) + " " + e.getMessage();
+            }
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(MessageResponse messageResponse) {
+            super.onPostExecute(messageResponse);
+
+            etMsg.setEnabled(true);
+            btnSend.setEnabled(true);
+            btnImg.setEnabled(true);
+
+            if (messageResponse != null) {
+                if (messageResponse.getSuccess() && messageResponse.getNumber() == 1) {
+                    etMsg.setText("");
+
+                    ((ChatAdapter) recyclerView.getAdapter()).addListItem(msg, 0);
+
+                    recyclerView.setVisibility(View.VISIBLE);
+                    recyclerView.smoothScrollToPosition(0);
+
+                }  else if (!TextUtils.isEmpty(messageResponse.getTitle()) && !TextUtils.isEmpty(messageResponse.getMessage())){
                     title = messageResponse.getTitle();
                     message = messageResponse.getMessage();
                 }

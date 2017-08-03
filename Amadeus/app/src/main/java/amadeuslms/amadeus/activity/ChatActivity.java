@@ -67,6 +67,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     public static final String MESSAGE_TEXT = "MESSAGE_TEXT";
 
     private static final int PICK_FROM_CAMERA = 1;
+    private static final int PICK_FROM_FILE = 2;
     private static final int IMAGE_MESSAGE = 3;
 
     private ChatAdapter adapter;
@@ -235,19 +236,43 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                 new SendMessage(this, user_to, message).execute();
             }
         } else if (v.getId() == btnImg.getId()) {
-            Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("Select image:");
+            builder.setItems(new CharSequence[]{"Gallery", "Camera"}, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    switch (which) {
+                        case 0:
+                            Intent intent_gallery = new Intent();
 
-            imageUri = Uri.fromFile(new File(Environment.getExternalStorageDirectory(), "tmp_image_" + String.valueOf(System.currentTimeMillis()) + ".jpg"));
+                            intent_gallery.setType("image/*");
+                            intent_gallery.setAction(Intent.ACTION_GET_CONTENT);
 
-            intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
+                            startActivityForResult(Intent.createChooser(intent_gallery, "Complete action using:"), PICK_FROM_FILE);
 
-            try {
-                intent.putExtra("return-data", true);
+                            break;
 
-                startActivityForResult(intent, PICK_FROM_CAMERA);
-            } catch (ActivityNotFoundException e) {
-                e.printStackTrace();
-            }
+                        case 1:
+                            Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+
+                            imageUri = Uri.fromFile(new File(Environment.getExternalStorageDirectory(), "tmp_image_" + String.valueOf(System.currentTimeMillis()) + ".jpg"));
+
+                            intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
+
+                            try {
+                                intent.putExtra("return-data", true);
+
+                                startActivityForResult(intent, PICK_FROM_CAMERA);
+                            } catch (ActivityNotFoundException e) {
+                                e.printStackTrace();
+                            }
+
+                            break;
+                    }
+                }
+            });
+
+            builder.show();
         }
     }
 
@@ -313,6 +338,54 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                 });
 
                 builder.create().show();
+
+                break;
+
+            case PICK_FROM_FILE:
+                imageUri = data.getData();
+
+                AlertDialog.Builder builder_file = new AlertDialog.Builder(this);
+                builder_file.setTitle(R.string.crop_dialog_title);
+                builder_file.setMessage(R.string.crop_dialog_msg);
+                builder_file.setPositiveButton(R.string.positive, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+
+                        doCrop();
+                    }
+                });
+                builder_file.setNegativeButton(R.string.negative, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        InputStream is = null;
+
+                        try {
+                            is = getContentResolver().openInputStream(imageUri);
+
+                            final_img = BitmapFactory.decodeStream(is);
+
+                            destination = Uri.fromFile(new File(getCacheDir(), "cropped_" + String.valueOf(System.currentTimeMillis() + ".jpg")));
+
+                            OutputStream os = getContentResolver().openOutputStream(destination);
+
+                            if (os != null) {
+                                final_img.compress(Bitmap.CompressFormat.JPEG, 90, os);
+
+                                os.flush();
+                                os.close();
+
+                                getTextMsg(destination);
+                            }
+                        } catch (IOException e) {
+                            System.out.println(e.getMessage());
+                        }  catch (OutOfMemoryError e) {
+                            System.out.println(e.getMessage());
+                        }
+                    }
+                });
+
+                builder_file.create().show();
 
                 break;
 

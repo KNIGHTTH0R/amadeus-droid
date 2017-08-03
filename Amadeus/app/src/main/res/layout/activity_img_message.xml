@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/primaryBlack"
+    tools:context="amadeuslms.amadeus.activity.ImgMessageActivity">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ImageView
+            android:id="@+id/full_img"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:scaleType="fitCenter" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:orientation="horizontal"
+            android:padding="@dimen/dp5">
+
+            <RelativeLayout
+                android:id="@+id/sender_section"
+                style="@style/msgSender">
+
+                <EditText
+                    android:id="@+id/sender_msg"
+                    android:textColor="@color/primaryBlack"
+                    android:textColorHint="@color/primaryBlack"
+                    style="@style/msgSender.Input" />
+
+            </RelativeLayout>
+
+            <Button
+                android:id="@+id/sender_btn"
+                style="@style/msgSenderBtn"
+                android:text="@string/fa_send" />
+
+        </RelativeLayout>
+
+    </FrameLayout>
+
+</android.support.constraint.ConstraintLayout>

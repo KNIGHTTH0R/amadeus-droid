@@ -10,6 +10,7 @@ import amadeuslms.amadeus.models.MessageModel;
 
 public class MessagesList {
 
+    private MessageModel message_sent;
     private List<MessageModel> messages;
 
     public List<MessageModel> getMessages() {
@@ -18,5 +19,13 @@ public class MessagesList {
 
     public void setMessages(List<MessageModel> messages) {
         this.messages = messages;
+    }
+
+    public MessageModel getMessage_sent() {
+        return message_sent;
+    }
+
+    public void setMessage_sent(MessageModel message_sent) {
+        this.message_sent = message_sent;
     }
 }

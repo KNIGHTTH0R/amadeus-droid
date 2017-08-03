@@ -28,6 +28,12 @@
     <string name="today">Today</string>
     <string name="yesterday">Yesterday</string>
 
+    <string name="crop_dialog_title">Crop Image</string>
+    <string name="crop_dialog_msg">Would you like to crop the image?</string>
+
+    <string name="positive">Yes</string>
+    <string name="negative">No</string>
+
     <!-- FontAwesome Icons -->
     <string name="fa_users" translatable="false">&#xf0c0;</string>
     <string name="fa_graduation_cap" translatable="false">&#xf19d;</string>

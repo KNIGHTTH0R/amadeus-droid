@@ -66,7 +66,6 @@ public class HttpUtils {
         }
 
         MediaType mediaImage = MediaType.parse("image/*");
-        MediaType mediaJson = MediaType.parse("application/json; charset=utf-8");
 
         File image = new File(destination.getPath());
 

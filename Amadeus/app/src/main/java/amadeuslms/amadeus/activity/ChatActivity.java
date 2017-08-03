@@ -1,5 +1,6 @@
 package amadeuslms.amadeus.activity;
 
+import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -301,7 +302,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                                 os.flush();
                                 os.close();
 
-                                getTextMsg(final_img);
+                                getTextMsg(destination);
                             }
                         } catch (IOException e) {
                             System.out.println(e.getMessage());
@@ -312,6 +313,13 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                 });
 
                 builder.create().show();
+
+                break;
+
+            case Crop.REQUEST_CROP:
+                destination = Crop.getOutput(data);
+
+                getTextMsg(destination);
 
                 break;
 
@@ -358,18 +366,12 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         Crop.of(imageUri, destination).withMaxSize(500, 500).asSquare().start(this);
     }
 
-    private void getTextMsg(Bitmap img) {
-        ByteArrayOutputStream stream = new ByteArrayOutputStream();
-
-        if (stream != null) {
-            img.compress(Bitmap.CompressFormat.JPEG, 90, stream);
-            byte[] bytes = stream.toByteArray();
-
-            Intent intent = new Intent(context, ImgMessageActivity.class);
-            intent.setFlags(0);
-            intent.putExtra(SELECTED_IMG, bytes);
-            startActivityForResult(intent, IMAGE_MESSAGE);
-        }
+    private void getTextMsg(Uri img) {
+        Intent intent = new Intent();
+        intent.setClass(context, ImgMessageActivity.class);
+        intent.setFlags(0);
+        intent.putExtra(SELECTED_IMG, img);
+        startActivityForResult(intent, IMAGE_MESSAGE);
     }
 
     private static int exifToDegrees(int exifOrientation) {
@@ -488,7 +490,9 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                 if (messageResponse.getSuccess() && messageResponse.getNumber() == 1) {
                     etMsg.setText("");
 
-                    ((ChatAdapter) recyclerView.getAdapter()).addListItem(msg, 0);
+                    MessageModel sent = messageResponse.getData().getMessage_sent();
+
+                    ((ChatAdapter) recyclerView.getAdapter()).addListItem(sent, 0);
 
                     recyclerView.setVisibility(View.VISIBLE);
                     recyclerView.smoothScrollToPosition(0);

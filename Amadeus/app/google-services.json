@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "1054309846810",
+    "firebase_url": "https://amadeus-f57a5.firebaseio.com",
+    "project_id": "amadeus-f57a5",
+    "storage_bucket": "amadeus-f57a5.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1054309846810:android:7138b2e27c7c553f",
+        "android_client_info": {
+          "package_name": "amadeuslms.amadeus"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1054309846810-59ftkduihovv1ovv5kqdouma6ppu8lmb.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "amadeuslms.amadeus",
+            "certificate_hash": "951e6a20c33e60efa27840fdfa6e4853d3f7a465"
+          }
+        },
+        {
+          "client_id": "1054309846810-7592a41vu2f27na2uu7q018lbt5c5g1t.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC_hfU5eLIplqYk_XPpi9eVYqHp58SsUFY"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1054309846810-7592a41vu2f27na2uu7q018lbt5c5g1t.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

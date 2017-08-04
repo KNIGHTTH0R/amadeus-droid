@@ -18,4 +18,20 @@
     <string name="loading_subjects">Carregando seus assuntos...</string>
     <string name="loading_participants">Carregando participantes do assunto...</string>
     <string name="action_logout">Sair</string>
+
+    <string name="chat_sender_hint">Escreva sua mensagem...</string>
+    <string name="today">Hoje</string>
+    <string name="yesterday">Ontem</string>
+
+    <string name="crop_dialog_title">Cortar imagem</string>
+    <string name="crop_dialog_msg">Você gostaria de cortar essa imagem?</string>
+
+    <string name="image_chooser_title">Selecionar imagem de:</string>
+    <string name="image_gallery_option">Galeria</string>
+    <string name="image_camera_option">Câmera</string>
+
+    <string name="chooser_title">Complete a ação usando:</string>
+
+    <string name="positive">Sim</string>
+    <string name="negative">Não</string>
 </resources>

@@ -31,6 +31,12 @@
     <string name="crop_dialog_title">Crop Image</string>
     <string name="crop_dialog_msg">Would you like to crop the image?</string>
 
+    <string name="image_chooser_title">Select image from:</string>
+    <string name="image_gallery_option">Gallery</string>
+    <string name="image_camera_option">Camera</string>
+
+    <string name="chooser_title">Complete action using:</string>
+
     <string name="positive">Yes</string>
     <string name="negative">No</string>
 

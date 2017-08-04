@@ -237,8 +237,8 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
             }
         } else if (v.getId() == btnImg.getId()) {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setTitle("Select image:");
-            builder.setItems(new CharSequence[]{"Gallery", "Camera"}, new DialogInterface.OnClickListener() {
+            builder.setTitle(R.string.image_chooser_title);
+            builder.setItems(new CharSequence[]{getString(R.string.image_gallery_option), getString(R.string.image_camera_option)}, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     switch (which) {
@@ -248,7 +248,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                             intent_gallery.setType("image/*");
                             intent_gallery.setAction(Intent.ACTION_GET_CONTENT);
 
-                            startActivityForResult(Intent.createChooser(intent_gallery, "Complete action using:"), PICK_FROM_FILE);
+                            startActivityForResult(Intent.createChooser(intent_gallery, getString(R.string.chooser_title)), PICK_FROM_FILE);
 
                             break;
 
@@ -533,7 +533,6 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         protected void onPreExecute(){
             super.onPreExecute();
 
-            //flLoading.setVisibility(FrameLayout.VISIBLE);
             etMsg.setEnabled(false);
             btnSend.setEnabled(false);
             btnImg.setEnabled(false);
@@ -612,7 +611,6 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         protected void onPreExecute(){
             super.onPreExecute();
 
-            //flLoading.setVisibility(FrameLayout.VISIBLE);
             etMsg.setEnabled(false);
             btnSend.setEnabled(false);
             btnImg.setEnabled(false);

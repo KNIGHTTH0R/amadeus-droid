@@ -11,6 +11,20 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
+    <!-- FCM Service to handle messages and notifications -->
+    <service android:name=".services.MessagingService">
+        <intent-filter>
+            <action android:name="com.google.firebase.MESSAGING_EVENT" />
+        </intent-filter>
+    </service>
+
+    <!-- FCM Service to handle user/device tokens -->
+    <service android:name=".services.InstanceIDService">
+        <intent-filter>
+            <action android:name="com.google.firebase.INSTANCE_ID_EVENT"/>
+        </intent-filter>
+    </service>
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"

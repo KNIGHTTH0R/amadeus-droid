@@ -1,11 +1,22 @@
 package amadeuslms.amadeus.utils;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.net.Uri;
 
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.security.KeyStore;
+import java.security.cert.Certificate;
+import java.security.cert.CertificateFactory;
 import java.util.concurrent.TimeUnit;
+
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.TrustManagerFactory;
+import javax.net.ssl.X509TrustManager;
 
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
@@ -20,11 +31,38 @@ import okhttp3.Response;
 
 public class HttpUtils {
 
-    public static String post(String address, String json, String token) throws IOException {
+    public static String post(Context context, String address, String json, String token) throws IOException {
+        SSLContext sslContext;
+        TrustManager[] trustManagers;
+
+        try {
+            KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
+            keyStore.load(null, null);
+            InputStream certInputStream = context.getAssets().open("server.pem");
+            BufferedInputStream bis = new BufferedInputStream(certInputStream);
+            CertificateFactory certificateFactory = CertificateFactory.getInstance("X.509");
+
+            while (bis.available() > 0) {
+                Certificate cert = certificateFactory.generateCertificate(bis);
+                keyStore.setCertificateEntry("www.amadeuslms.univasf.edu.br", cert);
+            }
+
+            TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+            trustManagerFactory.init(keyStore);
+            trustManagers = trustManagerFactory.getTrustManagers();
+
+            sslContext = SSLContext.getInstance("TLS");
+            sslContext.init(null, trustManagers, null);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return e.getMessage();
+        }
+
         OkHttpClient client = new OkHttpClient.Builder()
                 .connectTimeout(30, TimeUnit.SECONDS)
                 .writeTimeout(30, TimeUnit.SECONDS)
                 .readTimeout(30, TimeUnit.SECONDS)
+                .sslSocketFactory(sslContext.getSocketFactory())
                 .build();
 
         Request.Builder builder = new Request.Builder();

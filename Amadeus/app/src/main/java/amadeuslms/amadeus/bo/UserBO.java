@@ -13,6 +13,8 @@ import java.util.Map;
 
 import amadeuslms.amadeus.bean.ApplicationProperties;
 import amadeuslms.amadeus.cache.TokenCacheController;
+import amadeuslms.amadeus.models.UserModel;
+import amadeuslms.amadeus.response.GenericResponse;
 import amadeuslms.amadeus.response.TokenResponse;
 import amadeuslms.amadeus.response.UserResponse;
 import amadeuslms.amadeus.utils.HttpUtils;
@@ -37,10 +39,10 @@ public class UserBO {
 
         JSONObject content = new JSONObject(data);
 
-        String json = HttpUtils.post(url.toString(), content.toString(), "");
+        String json = HttpUtils.post(context, url.toString(), content.toString(), "");
 
         if (json != null && json.trim().length() > 0) {
-
+            System.out.println(json);
             Type type = new TypeToken<TokenResponse>(){}.getType();
 
             TokenResponse token = new Gson().fromJson(json, type);
@@ -54,9 +56,10 @@ public class UserBO {
                 url.append(host);
                 url.append("/api/users/login/");
 
-                json = HttpUtils.post(url.toString(), content.toString(), token.getToken_type() + " " + token.getAccess_token());
+                json = HttpUtils.post(context, url.toString(), content.toString(), token.getToken_type() + " " + token.getAccess_token());
 
                 if (json != null && json.trim().length() > 0) {
+                    System.out.println(json);
                     type = new TypeToken<UserResponse>() {
                     }.getType();
 
@@ -65,6 +68,29 @@ public class UserBO {
             }
         }
 
+        return null;
+    }
+
+    public GenericResponse registerDevice(Context context, UserModel user, String device) throws Exception {
+        TokenResponse token = TokenCacheController.getTokenCache(context);
+
+        StringBuilder url = new StringBuilder();
+        url.append(token.getWebserver_url());
+        url.append("/api/users/register_device/");
+
+        Map<String, String> data = new HashMap<String, String>();
+        data.put("email", user.getEmail());
+        data.put("device", device);
+
+        JSONObject content = new JSONObject(data);
+
+        String json = HttpUtils.post(context, url.toString(), content.toString(), token.getToken_type() + " " + token.getAccess_token());
+
+        if (json != null && json.trim().length() > 0) {
+            Type type = new TypeToken<GenericResponse>(){}.getType();
+
+            return new Gson().fromJson(json, type);
+        }
         return null;
     }
 }

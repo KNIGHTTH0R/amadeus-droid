@@ -31,6 +31,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.google.firebase.iid.FirebaseInstanceId;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,6 +40,7 @@ import amadeuslms.amadeus.R;
 import amadeuslms.amadeus.bo.UserBO;
 import amadeuslms.amadeus.cache.UserCacheController;
 import amadeuslms.amadeus.response.UserResponse;
+import amadeuslms.amadeus.services.InstanceIDService;
 
 /**
  * A login screen that offers login via email/password.
@@ -281,6 +284,10 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             if (userResponse != null) {
                 if (userResponse.getSuccess() && userResponse.getNumber() == 1) {
                     UserCacheController.setUserCache(context, userResponse.getData());
+
+                    //Registering device
+                    InstanceIDService iid = new InstanceIDService();
+                    iid.sendRegistrationServer(context, userResponse.getData());
 
                     Intent intent = new Intent(context, HomeActivity.class);
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

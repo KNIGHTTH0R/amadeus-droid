@@ -36,7 +36,7 @@ public class ParticipantsBO {
 
         JSONObject content = new JSONObject(data);
 
-        String json = HttpUtils.post(url.toString(), content.toString(), token.getToken_type() + " " + token.getAccess_token());
+        String json = HttpUtils.post(context, url.toString(), content.toString(), token.getToken_type() + " " + token.getAccess_token());
 
         if (json != null && json.trim().length() > 0) {
             Type type = new TypeToken<ParticipantsResponse>(){}.getType();

@@ -34,9 +34,14 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.soundcloud.android.crop.Crop;
 import com.squareup.picasso.Picasso;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -50,6 +55,7 @@ import amadeuslms.amadeus.adapters.ChatAdapter;
 import amadeuslms.amadeus.bo.MessageBO;
 import amadeuslms.amadeus.cache.TokenCacheController;
 import amadeuslms.amadeus.cache.UserCacheController;
+import amadeuslms.amadeus.events.NewMessageEvent;
 import amadeuslms.amadeus.models.MessageModel;
 import amadeuslms.amadeus.models.SubjectModel;
 import amadeuslms.amadeus.models.UserModel;
@@ -65,6 +71,9 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     public static final String SUBJECT = "SUBJECT";
     public static final String SELECTED_IMG = "SELECTED_IMG";
     public static final String MESSAGE_TEXT = "MESSAGE_TEXT";
+
+    public static boolean IS_ON_TOP;
+    public static String talk_user;
 
     private static final int PICK_FROM_CAMERA = 1;
     private static final int PICK_FROM_FILE = 2;
@@ -106,6 +115,8 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         if (intent != null && intent.hasExtra(USER_TO) && intent.hasExtra(SUBJECT)) {
             user_to = intent.getParcelableExtra(USER_TO);
             subject = intent.getParcelableExtra(SUBJECT);
+
+            talk_user = user_to.getEmail();
 
             actionBar = getSupportActionBar();
             actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
@@ -209,6 +220,34 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
+    protected void onResume(){
+        super.onResume();
+
+        IS_ON_TOP = true;
+    }
+
+    @Override
+    protected void onPause(){
+        super.onPause();
+
+        IS_ON_TOP = false;
+    }
+
+    @Override
+    protected void onStop(){
+        EventBus.getDefault().unregister(this);
+
+        super.onStop();
     }
 
     public void goLogin() {
@@ -452,6 +491,18 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         else if (exifOrientation == ExifInterface.ORIENTATION_ROTATE_180) {  return 180; }
         else if (exifOrientation == ExifInterface.ORIENTATION_ROTATE_270) {  return 270; }
         return 0;
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onNewMessage(NewMessageEvent event) {
+        System.out.println("LEGEND: Yahoo");
+        MessageModel received = event.response.getData().getMessage_sent();
+
+        ((ChatAdapter) recyclerView.getAdapter()).addListItem(received, 0);
+        System.out.println("LEGEND: Yahoo 2");
+
+        recyclerView.setVisibility(View.VISIBLE);
+        recyclerView.smoothScrollToPosition(0);
     }
 
     private class LoadChat extends AsyncTask<Void, Void, MessageResponse> {

@@ -495,11 +495,9 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onNewMessage(NewMessageEvent event) {
-        System.out.println("LEGEND: Yahoo");
         MessageModel received = event.response.getData().getMessage_sent();
 
         ((ChatAdapter) recyclerView.getAdapter()).addListItem(received, 0);
-        System.out.println("LEGEND: Yahoo 2");
 
         recyclerView.setVisibility(View.VISIBLE);
         recyclerView.smoothScrollToPosition(0);

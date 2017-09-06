@@ -61,7 +61,7 @@ public class MessageBO {
         data.put("user_two", user.getEmail());
         data.put("text", message.getText());
         data.put("email", message.getUser().getEmail());
-        data.put("subject", message.getSubject().getSlug());
+        data.put("subject", message.getSubject() != null ? message.getSubject().getSlug() : "");
         data.put("create_date", message.getCreate_date());
 
         JSONObject content = new JSONObject(data);
@@ -89,7 +89,7 @@ public class MessageBO {
         data.put("user_two", user.getEmail());
         data.put("text", message.getText());
         data.put("email", message.getUser().getEmail());
-        data.put("subject", message.getSubject().getSlug());
+        data.put("subject", message.getSubject() != null ? message.getSubject().getSlug() : "");
         data.put("create_date", message.getCreate_date());
 
         JSONObject content = new JSONObject(data);

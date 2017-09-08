@@ -5,18 +5,23 @@ import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
+import android.Manifest;
 import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.provider.MediaStore;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -78,6 +83,12 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     private static final int PICK_FROM_CAMERA = 1;
     private static final int PICK_FROM_FILE = 2;
     private static final int IMAGE_MESSAGE = 3;
+
+    static final int WRITE_EXST = 3;
+    static final int CAMERA = 5;
+
+    public boolean WRITE_GRANTED = false;
+    public boolean CAMERA_GRANTED = false;
 
     private ChatAdapter adapter;
     private RecyclerView recyclerView;
@@ -212,6 +223,42 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
             finish();
         }
     }
+    
+    private void askForPermission(String permission, Integer requestCode) {
+        if (ContextCompat.checkSelfPermission(ChatActivity.this, permission) != PackageManager.PERMISSION_GRANTED) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(ChatActivity.this, permission)) {
+                //This is called if user has denied the permission before
+                //In this case I am just asking the permission again
+                ActivityCompat.requestPermissions(ChatActivity.this, new String[]{permission}, requestCode);
+            } else {
+                ActivityCompat.requestPermissions(ChatActivity.this, new String[]{permission}, requestCode);
+            }
+        } else {
+            switch (requestCode) {
+                case 3:
+                    WRITE_GRANTED = true;
+                    break;
+                case 5:
+                    CAMERA_GRANTED = true;
+                    break;
+            }
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if(ActivityCompat.checkSelfPermission(this, permissions[0]) == PackageManager.PERMISSION_GRANTED) {
+            switch (requestCode) {
+                case 3:
+                    WRITE_GRANTED = true;
+                    break;
+                case 5:
+                    CAMERA_GRANTED = true;
+                    break;
+            }
+        }
+    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item){
@@ -274,45 +321,58 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
 
                 new SendMessage(this, user_to, message).execute();
             }
-        } else if (v.getId() == btnImg.getId()) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setTitle(R.string.image_chooser_title);
-            builder.setItems(new CharSequence[]{getString(R.string.image_gallery_option), getString(R.string.image_camera_option)}, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    switch (which) {
-                        case 0:
-                            Intent intent_gallery = new Intent();
-
-                            intent_gallery.setType("image/*");
-                            intent_gallery.setAction(Intent.ACTION_GET_CONTENT);
-
-                            startActivityForResult(Intent.createChooser(intent_gallery, getString(R.string.chooser_title)), PICK_FROM_FILE);
-
-                            break;
-
-                        case 1:
-                            Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-
-                            imageUri = Uri.fromFile(new File(Environment.getExternalStorageDirectory(), "tmp_image_" + String.valueOf(System.currentTimeMillis()) + ".jpg"));
-
-                            intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
-
-                            try {
-                                intent.putExtra("return-data", true);
-
-                                startActivityForResult(intent, PICK_FROM_CAMERA);
-                            } catch (ActivityNotFoundException e) {
-                                e.printStackTrace();
-                            }
-
-                            break;
+        } else if (v.getId() == btnImg.getId() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                askForPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE,WRITE_EXST);
+                if(WRITE_GRANTED) {
+                    askForPermission(Manifest.permission.CAMERA,CAMERA);
+                    if(CAMERA_GRANTED) {
+                      onClickPermissionsGranted(v);
                     }
                 }
-            });
-
-            builder.show();
+            }
+        } else if (v.getId() == btnImg.getId()) {
+            onClickPermissionsGranted(v);
         }
+    }
+
+    public void onClickPermissionsGranted(View v) {        
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(R.string.image_chooser_title);
+        builder.setItems(new CharSequence[]{getString(R.string.image_gallery_option), getString(R.string.image_camera_option)}, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                switch (which) {
+                    case 0:
+                        Intent intent_gallery = new Intent();
+
+                        intent_gallery.setType("image/*");
+                        intent_gallery.setAction(Intent.ACTION_GET_CONTENT);
+
+                        startActivityForResult(Intent.createChooser(intent_gallery, getString(R.string.chooser_title)), PICK_FROM_FILE);
+
+                        break;
+
+                    case 1:
+                        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+
+                        imageUri = Uri.fromFile(new File(Environment.getExternalStorageDirectory(), "tmp_image_" + String.valueOf(System.currentTimeMillis()) + ".jpg"));
+
+                        intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
+
+                        try {
+                            intent.putExtra("return-data", true);
+
+                            startActivityForResult(intent, PICK_FROM_CAMERA);
+                        } catch (ActivityNotFoundException e) {
+                            e.printStackTrace();
+                        }
+
+                        break;
+                }
+            }
+        });
+        builder.show();
     }
 
     @Override

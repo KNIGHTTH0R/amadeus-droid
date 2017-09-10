@@ -34,4 +34,10 @@
 
     <string name="positive">Sim</string>
     <string name="negative">Não</string>
+
+    <string name="pendency_notify_title">Pendências</string>
+    <plurals name="pendency_notify_message">
+        <item quantity="one">Você tem %d nova pendência.</item>
+        <item quantity="other">Você têm %d novas pendências.</item>
+    </plurals>
 </resources>

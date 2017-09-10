@@ -55,6 +55,8 @@ public class MessagingService extends FirebaseMessagingService {
             }
         } else if (type.equals("mural")) {
             setMuralNotification(data);
+        } else if (type.equals("pendency")) {
+            setPendencyNotification(data);
         }
     }
 
@@ -153,5 +155,27 @@ public class MessagingService extends FirebaseMessagingService {
 
         NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.notify(6535, builder.build());
+    }
+
+    private void setPendencyNotification(Map<String, String> data) {
+        final NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
+
+        int notify = Integer.parseInt(data.get("body").toString());
+
+        builder.setContentTitle(getString(R.string.pendency_notify_title));
+        builder.setContentText(getResources().getQuantityString(R.plurals.pendency_notify_message, notify, notify));
+        builder.setSmallIcon(R.drawable.ic_logo_vector_white);
+        builder.setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.ic_logo_vector));
+        builder.setAutoCancel(true);
+
+        long[] pattern = {500, 500, 500, 500, 500, 500, 500, 500, 500};
+
+        builder.setVibrate(pattern);
+
+        builder.setVisibility(NotificationCompat.VISIBILITY_PUBLIC);
+        builder.setPriority(NotificationCompat.PRIORITY_HIGH);
+
+        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager.notify(6536, builder.build());
     }
 }

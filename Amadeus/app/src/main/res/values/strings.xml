@@ -40,6 +40,12 @@
     <string name="positive">Yes</string>
     <string name="negative">No</string>
 
+    <string name="pendency_notify_title">Pendency</string>
+    <plurals name="pendency_notify_message">
+        <item quantity="one">You have %d new pendency.</item>
+        <item quantity="other">You have %d new pendencies.</item>
+    </plurals>
+
     <!-- FontAwesome Icons -->
     <string name="fa_users" translatable="false">&#xf0c0;</string>
     <string name="fa_graduation_cap" translatable="false">&#xf19d;</string>

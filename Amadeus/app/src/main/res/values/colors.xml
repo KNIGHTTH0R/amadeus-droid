@@ -12,6 +12,7 @@
     <color name="primaryGray">#BDBDBD</color>
     <color name="primaryBlack">#191919</color>
     <color name="darkerGray">#837e7e</color>
+    <color name="primaryRed">#FF0000</color>
 
     <!-- Transparency Colors -->
     <color name="black95_transparency">#F2000000</color>

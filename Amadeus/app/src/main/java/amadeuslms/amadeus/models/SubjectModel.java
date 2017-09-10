@@ -12,15 +12,17 @@ public class SubjectModel implements Parcelable {
 
     private String name, slug;
     private boolean visible;
+    private int notifications;
 
     public SubjectModel(Parcel in) {
-        String[] data = new String[3];
+        String[] data = new String[4];
 
         in.readStringArray(data);
 
         this.setName(data[0]);
         this.setSlug(data[1]);
         this.setVisible(Boolean.parseBoolean(data[2]));
+        this.setNotifications(Integer.parseInt(data[3]));
    }
 
     public static final Parcelable.Creator<SubjectModel> CREATOR = new Parcelable.Creator<SubjectModel>() {
@@ -59,6 +61,14 @@ public class SubjectModel implements Parcelable {
         this.visible = visible;
     }
 
+    public int getNotifications() {
+        return notifications;
+    }
+
+    public void setNotifications(int notifications) {
+        this.notifications = notifications;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -69,7 +79,8 @@ public class SubjectModel implements Parcelable {
         dest.writeStringArray(new String[] {
                 this.getName(),
                 this.getSlug(),
-                String.valueOf(this.isVisible())
+                String.valueOf(this.isVisible()),
+                String.valueOf(this.getNotifications())
         });
     }
 }

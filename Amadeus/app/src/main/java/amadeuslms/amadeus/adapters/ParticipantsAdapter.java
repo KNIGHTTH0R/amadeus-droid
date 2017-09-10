@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
@@ -74,6 +75,13 @@ public class ParticipantsAdapter extends BaseAdapter {
         }
 
         viewHolder.tvName.setText(model.getDisplayName());
+
+        if (model.getUnseen_msgs() > 0) {
+            viewHolder.tvBadge.setVisibility(TextView.VISIBLE);
+            viewHolder.tvBadge.setText(model.getUnseen_msgs() > 99 ? "+99" : String.valueOf(model.getUnseen_msgs()));
+        } else {
+            viewHolder.tvBadge.setVisibility(TextView.GONE);
+        }
 
         return convertView;
     }

@@ -15,7 +15,7 @@ public class SubjectViewHolder extends RecyclerView.ViewHolder {
 
     private Context context;
 
-    public TextView tvTitle, tvArrow;
+    public TextView tvTitle, tvArrow, tvBadge;
 
     public SubjectViewHolder(Context context, View itemView) {
         super(itemView);
@@ -24,5 +24,6 @@ public class SubjectViewHolder extends RecyclerView.ViewHolder {
 
         tvTitle = (TextView) itemView.findViewById(R.id.sub_header);
         tvArrow = (TextView) itemView.findViewById(R.id.item_arrow);
+        tvBadge = (TextView) itemView.findViewById(R.id.item_badge);
     }
 }

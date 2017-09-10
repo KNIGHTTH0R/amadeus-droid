@@ -16,7 +16,7 @@ public class ParticipantsViewHolder extends RecyclerView.ViewHolder {
 
     private Context context;
 
-    public TextView tvName;
+    public TextView tvName, tvBadge;
     public ImageView imPic;
 
     public ParticipantsViewHolder(Context context, View itemView) {
@@ -26,5 +26,6 @@ public class ParticipantsViewHolder extends RecyclerView.ViewHolder {
 
         tvName = (TextView) itemView.findViewById(R.id.sub_item);
         imPic = (ImageView) itemView.findViewById(R.id.item_image);
+        tvBadge = (TextView) itemView.findViewById(R.id.item_badge);
     }
 }

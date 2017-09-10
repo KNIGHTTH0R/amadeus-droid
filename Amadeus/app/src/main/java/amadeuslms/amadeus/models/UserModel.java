@@ -12,9 +12,10 @@ public class UserModel implements Parcelable {
 
     private String email, social_name, username, last_name, image_url, description, last_update, date_created;
     private boolean is_staff, is_active;
+    private int unseen_msgs;
 
     public UserModel(Parcel in) {
-        String[] data = new String[10];
+        String[] data = new String[11];
 
         in.readStringArray(data);
 
@@ -28,6 +29,7 @@ public class UserModel implements Parcelable {
         this.setDate_created(data[7]);
         this.setIs_staff(Boolean.parseBoolean(data[8]));
         this.setIs_active(Boolean.parseBoolean(data[9]));
+        this.setUnseen_msgs(Integer.parseInt(data[10]));
     }
 
     public static final Parcelable.Creator<UserModel> CREATOR = new Parcelable.Creator<UserModel>() {
@@ -122,6 +124,14 @@ public class UserModel implements Parcelable {
         this.is_active = is_active;
     }
 
+    public int getUnseen_msgs() {
+        return unseen_msgs;
+    }
+
+    public void setUnseen_msgs(int unseen_msgs) {
+        this.unseen_msgs = unseen_msgs;
+    }
+
     public String getDisplayName() {
         if (TextUtils.isEmpty(social_name)) {
             return username + " " + last_name;
@@ -147,7 +157,8 @@ public class UserModel implements Parcelable {
                 this.getLast_update(),
                 this.getDate_created(),
                 String.valueOf(this.is_staff()),
-                String.valueOf(this.is_active())
+                String.valueOf(this.is_active()),
+                String.valueOf(this.getUnseen_msgs())
         });
     }
 }

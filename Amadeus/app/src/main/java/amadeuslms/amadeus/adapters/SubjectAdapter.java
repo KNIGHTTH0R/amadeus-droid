@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.TextView;
 
 import java.util.List;
 
@@ -56,6 +57,13 @@ public class SubjectAdapter extends BaseAdapter {
             viewHolder.itemView.setBackgroundColor(this.context.getResources().getColor(R.color.primaryGray));
         } else {
             viewHolder.itemView.setBackgroundColor(this.context.getResources().getColor(R.color.primaryBlue));
+        }
+
+        if (model.getNotifications() > 0) {
+            viewHolder.tvBadge.setVisibility(TextView.VISIBLE);
+            viewHolder.tvBadge.setText(model.getNotifications() > 99 ? "+99" : String.valueOf(model.getNotifications()));
+        } else {
+            viewHolder.tvBadge.setVisibility(TextView.GONE);
         }
 
         return convertView;

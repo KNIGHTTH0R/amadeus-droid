@@ -12,14 +12,35 @@
         android:layout_height="@dimen/dp40"
         android:layout_gravity="center_vertical" />
 
-    <TextView
-        android:id="@+id/sub_item"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"
-        android:paddingLeft="?android:attr/expandableListPreferredChildPaddingLeft"
-        android:textSize="@dimen/sp14"
-        android:textStyle="bold"
-        android:textColor="@color/primaryBlack" />
+        android:layout_height="match_parent"
+        android:weightSum="1">
 
+        <TextView
+            android:id="@+id/sub_item"
+            android:layout_width="0dip"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.9"
+            android:layout_marginRight="@dimen/dp5"
+            android:layout_gravity="center_vertical"
+            android:paddingLeft="?android:attr/expandableListPreferredChildPaddingLeft"
+            android:textSize="@dimen/sp14"
+            android:textStyle="bold"
+            android:textColor="@color/primaryBlack" />
+
+        <TextView
+            android:id="@+id/item_badge"
+            android:layout_width="0dip"
+            android:layout_height="@dimen/dp26"
+            android:gravity="center"
+            android:textSize="@dimen/sp10"
+            android:layout_weight="0.1"
+            android:layout_marginLeft="@dimen/dp5"
+            android:layout_marginRight="@dimen/dp5"
+            android:layout_gravity="center_vertical"
+            android:background="@drawable/badge"
+            android:textColor="@color/primaryWhite" />
+
+    </LinearLayout>
 </LinearLayout>

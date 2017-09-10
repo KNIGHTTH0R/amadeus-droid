@@ -43,12 +43,18 @@ public class MessagingService extends FirebaseMessagingService {
 
         Map<String, String> data = remoteMessage.getData();
 
-        String user_talk = data.get("user_from").toString();
+        String type = data.get("type").toString();
 
-        if (ChatActivity.IS_ON_TOP && ChatActivity.talk_user.equals(user_talk)) {
-            EventBus.getDefault().post(new NewMessageEvent(data));
-        } else {
-            setNotification(remoteMessage);
+        if (type.equals("chat")) {
+            String user_talk = data.get("user_from").toString();
+
+            if (ChatActivity.IS_ON_TOP && ChatActivity.talk_user.equals(user_talk)) {
+                EventBus.getDefault().post(new NewMessageEvent(data));
+            } else {
+                setNotification(remoteMessage);
+            }
+        } else if (type.equals("mural")) {
+            setMuralNotification(data);
         }
     }
 
@@ -106,5 +112,46 @@ public class MessagingService extends FirebaseMessagingService {
 
         NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.notify(6534, builder.build());
+    }
+
+    private void setMuralNotification(Map<String, String> data) {
+        final NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
+
+        String user_img = data.get("user_img").toString();
+
+        builder.setContentTitle(data.get("title").toString());
+        builder.setContentText(data.get("body").toString());
+        builder.setSmallIcon(R.drawable.ic_logo_vector_white);
+        builder.setAutoCancel(true);
+
+        if (!TextUtils.isEmpty(user_img)) {
+            String path = TokenCacheController.getTokenCache(this).getWebserver_url() + user_img;
+
+            try {
+                builder.setLargeIcon(Picasso.with(this).load(path).get());
+            } catch (IOException e) {
+                System.out.println("Error: " + e.getMessage());
+            }
+        } else {
+            try{
+                final InputStream is = this.getAssets().open("images/no_image.png");
+
+                Bitmap bmp = BitmapFactory.decodeStream(is);
+
+                builder.setLargeIcon(bmp);
+            }catch(IOException e){
+                System.out.println("Error: " + e.getMessage());
+            }
+        }
+
+        long[] pattern = {500, 500, 500, 500, 500, 500, 500, 500, 500};
+
+        builder.setVibrate(pattern);
+
+        builder.setVisibility(NotificationCompat.VISIBILITY_PUBLIC);
+        builder.setPriority(NotificationCompat.PRIORITY_HIGH);
+
+        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager.notify(6535, builder.build());
     }
 }

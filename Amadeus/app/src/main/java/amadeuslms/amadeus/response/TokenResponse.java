@@ -1,5 +1,7 @@
 package amadeuslms.amadeus.response;
 
+import java.lang.System;
+
 /**
  * Created by zambom on 16/06/17.
  */
@@ -8,6 +10,7 @@ public class TokenResponse extends GenericResponse {
 
     private String token_type, refresh_token, access_token, scope, webserver_url;
     private int expires_in;
+    private long time_stamp;
 
     public String getToken_type() {
         return token_type;
@@ -55,5 +58,17 @@ public class TokenResponse extends GenericResponse {
 
     public void setWebserver_url(String webserver_url) {
         this.webserver_url = webserver_url;
+    }
+
+    public long getTime_stamp() {
+        return time_stamp;
+    }
+
+    public void setTime_stamp() {
+        this.time_stamp = System.currentTimeMillis();
+    }
+
+    public boolean isToken_expired() {
+        return (System.currentTimeMillis() - time_stamp)/1000 >= expires_in; 
     }
 }

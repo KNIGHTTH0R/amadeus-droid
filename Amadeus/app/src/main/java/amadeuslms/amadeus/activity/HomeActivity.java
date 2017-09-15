@@ -95,7 +95,7 @@ public class HomeActivity extends AppCompatActivity implements SwipeRefreshLayou
 
             ImageUtils img = new ImageUtils(this);
 
-            if(user.getImage_url() != null && !user.getImage_url().equals("") && TokenCacheController.hasTokenCache(this)){
+            if(user.getImage_url() != null && !user.getImage_url().equals("") && TokenCacheController.hasTokenCache(this) && !TokenCacheController.getTokenCache(this).isToken_expired()){
                 String path = TokenCacheController.getTokenCache(this).getWebserver_url() + user.getImage_url();
 
                 Picasso.with(this).load(path).transform(new CircleTransformUtils()).into(ivPhoto);
@@ -123,7 +123,12 @@ public class HomeActivity extends AppCompatActivity implements SwipeRefreshLayou
 
                 showSubjects();
             } else {
-                new AsyncSubjects(this, user, false).execute();
+                if(!TokenCacheController.getTokenCache(this).isToken_expired()) {
+                    new AsyncSubjects(this, user, false).execute();
+                }
+                else {
+                    goLogin();
+                }
             }
         } else {
             goLogin();
@@ -159,17 +164,25 @@ public class HomeActivity extends AppCompatActivity implements SwipeRefreshLayou
 
     @Override
     public void onRefresh() {
-        new AsyncSubjects(this, user, true).execute();
+        if(!TokenCacheController.getTokenCache(this).isToken_expired()) {
+            new AsyncSubjects(this, user, true).execute();
+        } else {
+            goLogin();
+        }
     }
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        SubjectModel subject = ((SubjectAdapter) listView.getAdapter()).getItem(position);
+        if(!TokenCacheController.getTokenCache(this).isToken_expired()) {
+            SubjectModel subject = ((SubjectAdapter) listView.getAdapter()).getItem(position);
 
-        if (subject != null) {
-            Intent intent = new Intent(view.getContext(), ParticipantsActivity.class);
-            intent.putExtra(ParticipantsActivity.SUBJECT, subject);
-            startActivity(intent);
+            if (subject != null) {
+                Intent intent = new Intent(view.getContext(), ParticipantsActivity.class);
+                intent.putExtra(ParticipantsActivity.SUBJECT, subject);
+                startActivity(intent);
+            }
+        } else {
+            goLogin();
         }
     }
 

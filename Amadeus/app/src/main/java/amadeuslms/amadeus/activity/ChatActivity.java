@@ -150,7 +150,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
 
             ImageUtils img = new ImageUtils(this);
 
-            if(user_to.getImage_url() != null && !user_to.getImage_url().equals("") && TokenCacheController.hasTokenCache(this)){
+            if(user_to.getImage_url() != null && !user_to.getImage_url().equals("") && TokenCacheController.hasTokenCache(this) && !TokenCacheController.getTokenCache(this).isToken_expired()){
                 String path = TokenCacheController.getTokenCache(this).getWebserver_url() + user_to.getImage_url();
 
                 Picasso.with(this).load(path).transform(new CircleTransformUtils()).into(ivImg);
@@ -307,32 +307,36 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onClick(View v) {
-        if (v.getId() == btnSend.getId()) {
-            String text = etMsg.getText().toString().trim();
-            if (!text.isEmpty()) {
-                etMsg.setEnabled(false);
-                btnSend.setEnabled(false);
+        if(!TokenCacheController.getTokenCache(context).isToken_expired()) {
+            if (v.getId() == btnSend.getId()) {
+                String text = etMsg.getText().toString().trim();
+                if (!text.isEmpty()) {
+                    etMsg.setEnabled(false);
+                    btnSend.setEnabled(false);
 
-                MessageModel message = new MessageModel();
-                message.setText(text);
-                message.setUser(user);
-                message.setSubject(subject);
-                message.setCreate_date(DateUtils.currentDate());
+                    MessageModel message = new MessageModel();
+                    message.setText(text);
+                    message.setUser(user);
+                    message.setSubject(subject);
+                    message.setCreate_date(DateUtils.currentDate());
 
-                new SendMessage(this, user_to, message).execute();
-            }
-        } else if (v.getId() == btnImg.getId() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                askForPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE,WRITE_EXST);
-                if(WRITE_GRANTED) {
-                    askForPermission(Manifest.permission.CAMERA,CAMERA);
-                    if(CAMERA_GRANTED) {
-                      onClickPermissionsGranted(v);
+                    new SendMessage(this, user_to, message).execute();
+                }
+            } else if (v.getId() == btnImg.getId() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    askForPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE,WRITE_EXST);
+                    if(WRITE_GRANTED) {
+                        askForPermission(Manifest.permission.CAMERA,CAMERA);
+                        if(CAMERA_GRANTED) {
+                          onClickPermissionsGranted(v);
+                        }
                     }
                 }
+            } else if (v.getId() == btnImg.getId()) {
+                onClickPermissionsGranted(v);
             }
-        } else if (v.getId() == btnImg.getId()) {
-            onClickPermissionsGranted(v);
+        } else {
+            goLogin();
         }
     }
 
@@ -581,13 +585,16 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
 
         @Override
         protected MessageResponse doInBackground(Void... params) {
-            try {
-                return new MessageBO().get_messages(context, user, user_to);
-            } catch (Exception e){
-                title = context.getString(R.string.error_box_title);
-                message = context.getString(R.string.error_box_msg) + " " + e.getMessage();
+            if(!TokenCacheController.getTokenCache(context).isToken_expired()) {
+                try {
+                    return new MessageBO().get_messages(context, user, user_to);
+                } catch (Exception e){
+                    title = context.getString(R.string.error_box_title);
+                    message = context.getString(R.string.error_box_msg) + " " + e.getMessage();
+                }
+            } else {
+                goLogin();
             }
-
             return null;
         }
 
@@ -649,11 +656,15 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
 
         @Override
         protected MessageResponse doInBackground(Void... params) {
-            try {
-                return new MessageBO().send_message(context, user, msg);
-            } catch (Exception e) {
-                title = context.getString(R.string.error_box_title);
-                message = context.getString(R.string.error_box_msg) + " " + e.getMessage();
+            if(!TokenCacheController.getTokenCache(context).isToken_expired()) {
+                try {
+                    return new MessageBO().send_message(context, user, msg);
+                } catch (Exception e) {
+                    title = context.getString(R.string.error_box_title);
+                    message = context.getString(R.string.error_box_msg) + " " + e.getMessage();
+                }
+            } else {
+                goLogin();
             }
 
             return null;
@@ -727,13 +738,16 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
 
         @Override
         protected MessageResponse doInBackground(Void... params) {
-            try {
-                return new MessageBO().send_image_message(context, user, msg, destination);
-            } catch (Exception e) {
-                title = context.getString(R.string.error_box_title);
-                message = context.getString(R.string.error_box_msg) + " " + e.getMessage();
+            if(!TokenCacheController.getTokenCache(context).isToken_expired()) {
+                try {
+                    return new MessageBO().send_image_message(context, user, msg, destination);
+                } catch (Exception e) {
+                    title = context.getString(R.string.error_box_title);
+                    message = context.getString(R.string.error_box_msg) + " " + e.getMessage();
+                }
+            } else {
+                goLogin();
             }
-
             return null;
         }
 

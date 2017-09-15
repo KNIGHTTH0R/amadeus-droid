@@ -26,6 +26,7 @@ import amadeuslms.amadeus.R;
 import amadeuslms.amadeus.adapters.ChatAdapter;
 import amadeuslms.amadeus.adapters.ParticipantsAdapter;
 import amadeuslms.amadeus.bo.ParticipantsBO;
+import amadeuslms.amadeus.cache.TokenCacheController;
 import amadeuslms.amadeus.cache.UserCacheController;
 import amadeuslms.amadeus.models.SubjectModel;
 import amadeuslms.amadeus.models.UserModel;
@@ -75,8 +76,11 @@ public class ParticipantsActivity extends AppCompatActivity implements SwipeRefr
 
                 listView = (ListView) findViewById(R.id.participants_list);
                 listView.setOnItemClickListener(this);
-
-                new AsyncParticipants(this, user, subject_slug, false).execute();
+                if(!TokenCacheController.getTokenCache(this).isToken_expired()) {
+                    new AsyncParticipants(this, user, subject_slug, false).execute();
+                } else {
+                    goLogin();
+                }
             } else {
                 goLogin();
             }
@@ -94,18 +98,26 @@ public class ParticipantsActivity extends AppCompatActivity implements SwipeRefr
 
     @Override
     public void onRefresh() {
-        new AsyncParticipants(this, user, subject_slug, true).execute();
+        if(!TokenCacheController.getTokenCache(this).isToken_expired()) {
+            new AsyncParticipants(this, user, subject_slug, true).execute();
+        } else {
+            goLogin();
+        }
     }
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        UserModel participant = ((ParticipantsAdapter) listView.getAdapter()).getItem(position);
+        if(!TokenCacheController.getTokenCache(this).isToken_expired()) {
+            UserModel participant = ((ParticipantsAdapter) listView.getAdapter()).getItem(position);
 
-        if (participant != null) {
-            Intent intent = new Intent(view.getContext(), ChatActivity.class);
-            intent.putExtra(ChatActivity.USER_TO, participant);
-            intent.putExtra(ChatActivity.SUBJECT, subject);
-            startActivity(intent);
+            if (participant != null) {
+                Intent intent = new Intent(view.getContext(), ChatActivity.class);
+                intent.putExtra(ChatActivity.USER_TO, participant);
+                intent.putExtra(ChatActivity.SUBJECT, subject);
+                startActivity(intent);
+            }
+        } else {
+            goLogin();
         }
     }
 

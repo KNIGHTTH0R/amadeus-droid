@@ -1,6 +1,27 @@
 package amadeuslms.amadeus.response;
 
+import android.app.Activity;
+import android.content.ActivityNotFoundException;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.os.AsyncTask;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
+
+import com.google.gson.Gson;
+
 import java.lang.System;
+
+import amadeuslms.amadeus.R;
+import amadeuslms.amadeus.bo.UserBO;
+import amadeuslms.amadeus.cache.CacheController;
+import amadeuslms.amadeus.cache.TokenCacheController;
+import amadeuslms.amadeus.cache.UserCacheController;
+import amadeuslms.amadeus.utils.HttpUtils;
 
 /**
  * Created by zambom on 16/06/17.
@@ -8,7 +29,7 @@ import java.lang.System;
 
 public class TokenResponse extends GenericResponse {
 
-    private String token_type, refresh_token, access_token, scope, webserver_url;
+    private String token_type, refresh_token, access_token, scope, webserver_url, email, password;
     private int expires_in;
     private long time_stamp;
 
@@ -68,7 +89,148 @@ public class TokenResponse extends GenericResponse {
         this.time_stamp = System.currentTimeMillis();
     }
 
-    public boolean isToken_expired() {
-        return (System.currentTimeMillis() - time_stamp)/1000 >= expires_in; 
+    public void setData(String email, String password) {
+        this.email = email;
+        this.password = password;
     }
+
+    public boolean isToken_expired() {
+        return (System.currentTimeMillis() - time_stamp)/1000 >= expires_in - 1800;
+        //1800'll work like a tolerance, allowing token to be renovate before it's expire, reducing chances of some error.
+    }
+
+    public void startRenewToken(Intent intent, Context context) {
+        RenewToken mAuthTask = null;
+        CacheController.clearCache(context);
+        mAuthTask = new RenewToken(intent, context);
+        mAuthTask.execute((Void) null);
+    }
+
+    private class RenewToken extends AsyncTask<Void, Void, UserResponse> {
+
+        private String title, message;
+        private Intent intent;
+        private Context context;
+
+        public RenewToken(Intent intent, Context context) {
+            this.intent = intent;
+            this.context = context;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected UserResponse doInBackground(Void... params) {
+            try {
+                return new UserBO().login(context, webserver_url, email, password);
+            } catch (Exception e) {
+                title = context.getString(R.string.error_box_title);
+                message = context.getString(R.string.error_box_msg) + " " + e.getMessage();
+            }
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(UserResponse userResponse) {
+            super.onPostExecute(userResponse);
+
+            if (userResponse != null) {
+                if (userResponse.getSuccess() && userResponse.getNumber() == 1) {
+                    UserCacheController.setUserCache(context, userResponse.getData());
+                    context.startActivity(intent);
+                } else if (!TextUtils.isEmpty(userResponse.getTitle()) && !TextUtils.isEmpty(userResponse.getMessage())){
+                    title = userResponse.getTitle();
+                    message = userResponse.getMessage();
+                }
+            }
+
+            if(!TextUtils.isEmpty(title) && !TextUtils.isEmpty(message)){
+                AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                builder.setTitle(title);
+                builder.setMessage(message);
+
+                builder.setPositiveButton(context.getResources().getString(R.string.ok), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+
+                builder.create().show();
+            }
+        }
+    }
+
+    public void startRenewToken_ForResult(Intent intent, Context context, int integer) {
+        RenewToken_ForResult mAuthTask = null;
+        CacheController.clearCache(context);
+        mAuthTask = new RenewToken_ForResult(intent, context, integer);
+        mAuthTask.execute((Void) null);
+    }
+
+    private class RenewToken_ForResult extends AsyncTask<Void, Void, UserResponse> {
+
+        private String title, message;
+        private Intent intent;
+        private Context context;
+        private int integer;
+
+        public RenewToken_ForResult(Intent intent, Context context, int integer) {
+            this.intent = intent;
+            this.context = context;
+            this.integer = integer;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected UserResponse doInBackground(Void... params) {
+            try {
+                return new UserBO().login(context, webserver_url, email, password);
+            } catch (Exception e) {
+                title = context.getString(R.string.error_box_title);
+                message = context.getString(R.string.error_box_msg) + " " + e.getMessage();
+            }
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(UserResponse userResponse) {
+            super.onPostExecute(userResponse);
+
+            if (userResponse != null) {
+                if (userResponse.getSuccess() && userResponse.getNumber() == 1) {
+                    UserCacheController.setUserCache(context, userResponse.getData());
+                    ((Activity)context).startActivityForResult(intent, integer);
+                } else if (!TextUtils.isEmpty(userResponse.getTitle()) && !TextUtils.isEmpty(userResponse.getMessage())){
+                    title = userResponse.getTitle();
+                    message = userResponse.getMessage();
+                }
+            }
+
+            if(!TextUtils.isEmpty(title) && !TextUtils.isEmpty(message)){
+                AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                builder.setTitle(title);
+                builder.setMessage(message);
+
+                builder.setPositiveButton(context.getResources().getString(R.string.ok), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+
+                builder.create().show();
+            }
+        }
+    }
+
 }

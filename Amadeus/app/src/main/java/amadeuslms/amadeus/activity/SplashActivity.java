@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 
+import amadeuslms.amadeus.cache.TokenCacheController;
 import amadeuslms.amadeus.cache.UserCacheController;
 
 /**
@@ -29,12 +30,18 @@ public class SplashActivity extends AppCompatActivity {
 
                 if (!UserCacheController.hasUserCache(context)) {
                     intent = new Intent(context, LoginActivity.class);
+                    startActivity(intent);
+                    finish();
                 } else {
                     intent = new Intent(context, HomeActivity.class);
+                    if(TokenCacheController.hasTokenCache(context) && TokenCacheController.getTokenCache(context).isToken_expired()) {
+                        TokenCacheController.getTokenCache(context).startRenewToken(intent, context);
+                    } else {
+                        startActivity(intent);
+                        finish();
+                    }
                 }
 
-                startActivity(intent);
-                finish();
             }
         }, SPLASH_TIMEOUT);
 

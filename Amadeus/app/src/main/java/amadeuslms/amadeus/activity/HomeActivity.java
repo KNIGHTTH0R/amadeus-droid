@@ -28,16 +28,26 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
 import com.squareup.picasso.Picasso;
+
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Type;
 import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 import amadeuslms.amadeus.R;
 import amadeuslms.amadeus.adapters.ParticipantsAdapter;
 import amadeuslms.amadeus.adapters.SubjectAdapter;
+import amadeuslms.amadeus.bean.ApplicationProperties;
 import amadeuslms.amadeus.bo.SubjectBO;
+import amadeuslms.amadeus.bo.UserBO;
 import amadeuslms.amadeus.cache.CacheController;
 import amadeuslms.amadeus.cache.SubjectCacheController;
 import amadeuslms.amadeus.cache.TokenCacheController;
@@ -45,7 +55,11 @@ import amadeuslms.amadeus.cache.UserCacheController;
 import amadeuslms.amadeus.models.SubjectModel;
 import amadeuslms.amadeus.models.UserModel;
 import amadeuslms.amadeus.response.SubjectResponse;
+import amadeuslms.amadeus.response.TokenResponse;
+import amadeuslms.amadeus.response.UserResponse;
+import amadeuslms.amadeus.services.InstanceIDService;
 import amadeuslms.amadeus.utils.CircleTransformUtils;
+import amadeuslms.amadeus.utils.HttpUtils;
 import amadeuslms.amadeus.utils.ImageUtils;
 
 public class HomeActivity extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener, AdapterView.OnItemClickListener {
@@ -67,6 +81,7 @@ public class HomeActivity extends AppCompatActivity implements SwipeRefreshLayou
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_home);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -94,12 +109,12 @@ public class HomeActivity extends AppCompatActivity implements SwipeRefreshLayou
             ivPhoto = (ImageView) actionBarCustom.findViewById(R.id.user_image);
 
             ImageUtils img = new ImageUtils(this);
-
-            if(user.getImage_url() != null && !user.getImage_url().equals("") && TokenCacheController.hasTokenCache(this) && !TokenCacheController.getTokenCache(this).isToken_expired()){
+            
+            if(user.getImage_url() != null && !user.getImage_url().equals("") && TokenCacheController.hasTokenCache(this) && !TokenCacheController.getTokenCache(this).isToken_expired()) {
                 String path = TokenCacheController.getTokenCache(this).getWebserver_url() + user.getImage_url();
 
                 Picasso.with(this).load(path).transform(new CircleTransformUtils()).into(ivPhoto);
-            }else{
+            } else {
                 try{
                     final InputStream is = this.getAssets().open("images/no_image.png");
 
@@ -123,14 +138,10 @@ public class HomeActivity extends AppCompatActivity implements SwipeRefreshLayou
 
                 showSubjects();
             } else {
-                if(!TokenCacheController.getTokenCache(this).isToken_expired()) {
-                    new AsyncSubjects(this, user, false).execute();
-                }
-                else {
-                    goLogin();
-                }
+                new AsyncSubjects(this, user, false).execute();
             }
         } else {
+            System.out.println("Q");
             goLogin();
         }
 
@@ -155,7 +166,6 @@ public class HomeActivity extends AppCompatActivity implements SwipeRefreshLayou
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.logout) {
             CacheController.clearCache(this);
-
             goLogin();
         }
 
@@ -164,26 +174,30 @@ public class HomeActivity extends AppCompatActivity implements SwipeRefreshLayou
 
     @Override
     public void onRefresh() {
-        if(!TokenCacheController.getTokenCache(this).isToken_expired()) {
+        if(TokenCacheController.hasTokenCache(this) && TokenCacheController.getTokenCache(this).isToken_expired()) {
+            Intent intent = new Intent(this, HomeActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            TokenCacheController.getTokenCache(this).startRenewToken(intent, this);
+        } else if (TokenCacheController.hasTokenCache(this) && !TokenCacheController.getTokenCache(this).isToken_expired()) {
             new AsyncSubjects(this, user, true).execute();
-        } else {
-            goLogin();
         }
     }
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        if(!TokenCacheController.getTokenCache(this).isToken_expired()) {
-            SubjectModel subject = ((SubjectAdapter) listView.getAdapter()).getItem(position);
+        SubjectModel subject = ((SubjectAdapter) listView.getAdapter()).getItem(position);
 
-            if (subject != null) {
-                Intent intent = new Intent(view.getContext(), ParticipantsActivity.class);
-                intent.putExtra(ParticipantsActivity.SUBJECT, subject);
+        if (subject != null) {
+            Intent intent = new Intent(view.getContext(), ParticipantsActivity.class);
+            intent.putExtra(ParticipantsActivity.SUBJECT, subject);
+            if(TokenCacheController.hasTokenCache(this) && TokenCacheController.getTokenCache(this).isToken_expired()) {
+                TokenCacheController.getTokenCache(this).startRenewToken(intent, this);
+            } else {
                 startActivity(intent);
             }
-        } else {
-            goLogin();
         }
+        
     }
 
     public void goLogin() {
@@ -193,7 +207,6 @@ public class HomeActivity extends AppCompatActivity implements SwipeRefreshLayou
         startActivity(intent);
         finish();
     }
-
 
     private void showSubjects() {
         listAdapter = new SubjectAdapter(this, headers);

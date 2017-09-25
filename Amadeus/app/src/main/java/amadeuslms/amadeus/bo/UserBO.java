@@ -48,7 +48,8 @@ public class UserBO {
             TokenResponse token = new Gson().fromJson(json, type);
 
             if (token != null) {
-                token.setTime_stamp();                      //Added for test
+                token.setData(email, password);
+                token.setTime_stamp();
                 token.setWebserver_url(host);
 
                 TokenCacheController.setTokenCache(context, token);

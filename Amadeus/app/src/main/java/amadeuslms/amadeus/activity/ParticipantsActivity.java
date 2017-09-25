@@ -15,22 +15,38 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.Gravity;
+import android.view.KeyEvent;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
+import org.json.JSONObject;
+
+import java.lang.reflect.Type;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import amadeuslms.amadeus.R;
 import amadeuslms.amadeus.adapters.ChatAdapter;
 import amadeuslms.amadeus.adapters.ParticipantsAdapter;
+import amadeuslms.amadeus.bean.ApplicationProperties;
 import amadeuslms.amadeus.bo.ParticipantsBO;
+import amadeuslms.amadeus.bo.UserBO;
+import amadeuslms.amadeus.cache.CacheController;
 import amadeuslms.amadeus.cache.TokenCacheController;
 import amadeuslms.amadeus.cache.UserCacheController;
 import amadeuslms.amadeus.models.SubjectModel;
 import amadeuslms.amadeus.models.UserModel;
 import amadeuslms.amadeus.response.ParticipantsResponse;
+import amadeuslms.amadeus.response.TokenResponse;
+import amadeuslms.amadeus.response.UserResponse;
+import amadeuslms.amadeus.utils.HttpUtils;
 
 public class ParticipantsActivity extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener, AdapterView.OnItemClickListener {
     private SwipeRefreshLayout swipeRefreshLayout;
@@ -76,13 +92,17 @@ public class ParticipantsActivity extends AppCompatActivity implements SwipeRefr
 
                 listView = (ListView) findViewById(R.id.participants_list);
                 listView.setOnItemClickListener(this);
-                if(!TokenCacheController.getTokenCache(this).isToken_expired()) {
-                    new AsyncParticipants(this, user, subject_slug, false).execute();
+
+                new AsyncParticipants(this, user, subject_slug, false).execute();
+
+            } else {
+                if(TokenCacheController.hasTokenCache(this) && TokenCacheController.getTokenCache(this).isToken_expired()) {
+                    Intent newIntent = new Intent(this, ParticipantsActivity.class);
+                    newIntent.putExtra(ParticipantsActivity.SUBJECT, subject);
+                    TokenCacheController.getTokenCache(this).startRenewToken(intent, this);
                 } else {
                     goLogin();
                 }
-            } else {
-                goLogin();
             }
         }
 
@@ -97,27 +117,47 @@ public class ParticipantsActivity extends AppCompatActivity implements SwipeRefr
     }
 
     @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+        case android.R.id.home:
+            if(TokenCacheController.hasTokenCache(this) && TokenCacheController.getTokenCache(this).isToken_expired()) {
+                Intent intent = new Intent(this, HomeActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                TokenCacheController.getTokenCache(this).startRenewToken(intent, this);
+                System.out.println("opa");
+            } else {
+                finish();
+            }
+            break;
+        }
+        return true;
+    }
+
+    @Override
     public void onRefresh() {
-        if(!TokenCacheController.getTokenCache(this).isToken_expired()) {
+        if(TokenCacheController.hasTokenCache(this) && TokenCacheController.getTokenCache(this).isToken_expired()) {
+            Intent intent = new Intent(this, ParticipantsActivity.class);
+            intent.putExtra(SUBJECT, subject);
+            TokenCacheController.getTokenCache(this).startRenewToken(intent, this);
+        } else if (TokenCacheController.hasTokenCache(this) && !TokenCacheController.getTokenCache(this).isToken_expired()) {
             new AsyncParticipants(this, user, subject_slug, true).execute();
-        } else {
-            goLogin();
         }
     }
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        if(!TokenCacheController.getTokenCache(this).isToken_expired()) {
-            UserModel participant = ((ParticipantsAdapter) listView.getAdapter()).getItem(position);
+        UserModel participant = ((ParticipantsAdapter) listView.getAdapter()).getItem(position);
 
-            if (participant != null) {
-                Intent intent = new Intent(view.getContext(), ChatActivity.class);
-                intent.putExtra(ChatActivity.USER_TO, participant);
-                intent.putExtra(ChatActivity.SUBJECT, subject);
+        if (participant != null) {
+            Intent intent = new Intent(view.getContext(), ChatActivity.class);
+            intent.putExtra(ChatActivity.USER_TO, participant);
+            intent.putExtra(ChatActivity.SUBJECT, subject);
+            if (TokenCacheController.hasTokenCache(this) && TokenCacheController.getTokenCache(this).isToken_expired()) {
+                TokenCacheController.getTokenCache(this).startRenewToken(intent, this);
+            } else {
                 startActivity(intent);
             }
-        } else {
-            goLogin();
         }
     }
 

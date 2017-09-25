@@ -248,7 +248,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
      * Represents an asynchronous login/registration task used to authenticate
      * the user.
      */
-    private class UserLoginTask extends AsyncTask<Void, Void, UserResponse> {
+    public class UserLoginTask extends AsyncTask<Void, Void, UserResponse> {
 
         private Context context;
         private String email, password, url, title, message;

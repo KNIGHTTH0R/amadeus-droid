@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
@@ -35,6 +36,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -58,6 +60,8 @@ import java.util.List;
 import amadeuslms.amadeus.R;
 import amadeuslms.amadeus.adapters.ChatAdapter;
 import amadeuslms.amadeus.bo.MessageBO;
+import amadeuslms.amadeus.bo.UserBO;
+import amadeuslms.amadeus.cache.CacheController;
 import amadeuslms.amadeus.cache.TokenCacheController;
 import amadeuslms.amadeus.cache.UserCacheController;
 import amadeuslms.amadeus.events.NewMessageEvent;
@@ -65,6 +69,8 @@ import amadeuslms.amadeus.models.MessageModel;
 import amadeuslms.amadeus.models.SubjectModel;
 import amadeuslms.amadeus.models.UserModel;
 import amadeuslms.amadeus.response.MessageResponse;
+import amadeuslms.amadeus.response.TokenResponse;
+import amadeuslms.amadeus.response.UserResponse;
 import amadeuslms.amadeus.utils.CircleTransformUtils;
 import amadeuslms.amadeus.utils.DateUtils;
 import amadeuslms.amadeus.utils.ImageUtils;
@@ -89,6 +95,9 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
 
     public boolean WRITE_GRANTED = false;
     public boolean CAMERA_GRANTED = false;
+
+    private boolean fav_msgChecked = false;
+    private boolean my_msgChecked = false;
 
     private ChatAdapter adapter;
     private RecyclerView recyclerView;
@@ -261,11 +270,60 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item){
-        if(item.getItemId() == android.R.id.home){
-            finish();
-        }
+    public boolean onCreateOptionsMenu(Menu menu){
+        getMenuInflater().inflate(R.menu.menu_chat, menu);
+        return true;
+    }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch(item.getItemId()) {
+            case android.R.id.home:
+                finish();
+                break;
+            /* Future implementation - filters
+            case R.id.favorite_messages:
+                if(item.isChecked()) {
+                    //User has unchecked
+                    fav_msgChecked = false;
+                    item.setChecked(false);
+                    System.out.println("unchecked");
+                    finish();
+                } else {
+                    //User has checked
+                    fav_msgChecked = true;
+                    item.setChecked(true);
+                    System.out.println("checked");
+                    finish();
+                }
+                break;
+            case R.id.my_messages:
+                if(item.isChecked()) {
+                    //User has unchecked
+                    my_msgChecked = false;
+                    item.setChecked(false);
+                    Handler handler = new Handler();
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            new LoadChat(context, user, user_to).execute();
+                        }
+                    });
+                } else {
+                    //User has checked
+                    my_msgChecked = true;
+                    item.setChecked(true);
+                    Handler handler = new Handler();
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            new LoadChat(context, user, user_to).execute();
+                        }
+                    });
+                }
+                break;
+                **/
+        }
         return super.onOptionsItemSelected(item);
     }
 
@@ -336,7 +394,8 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                 onClickPermissionsGranted(v);
             }
         } else {
-            goLogin();
+            Intent intent = new Intent(v.getContext(), ChatActivity.class);
+            TokenCacheController.getTokenCache(this).startRenewToken(intent, this);
         }
     }
 
@@ -547,7 +606,11 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         intent.setClass(context, ImgMessageActivity.class);
         intent.setFlags(0);
         intent.putExtra(SELECTED_IMG, img);
-        startActivityForResult(intent, IMAGE_MESSAGE);
+        if(!TokenCacheController.getTokenCache(context).isToken_expired()) {
+            startActivityForResult(intent, IMAGE_MESSAGE);
+        } else {
+            TokenCacheController.getTokenCache(context).startRenewToken_ForResult(intent, context, IMAGE_MESSAGE);
+        }
     }
 
     private static int exifToDegrees(int exifOrientation) {
@@ -593,7 +656,8 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                     message = context.getString(R.string.error_box_msg) + " " + e.getMessage();
                 }
             } else {
-                goLogin();
+                Intent intent = new Intent(context, ChatActivity.class);
+                TokenCacheController.getTokenCache(context).startRenewToken(intent, context);
             }
             return null;
         }
@@ -606,7 +670,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                 if (messageResponse.getSuccess() && messageResponse.getNumber() == 1) {
                     messageList = messageResponse.getData().getMessages();
 
-                    adapter = new ChatAdapter(context, user, messageList);
+                    adapter = new ChatAdapter(context, user, messageList, fav_msgChecked, my_msgChecked);
 
                     recyclerView.setAdapter(adapter);
                 } else if (!TextUtils.isEmpty(messageResponse.getTitle()) && !TextUtils.isEmpty(messageResponse.getMessage())){
@@ -664,7 +728,8 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                     message = context.getString(R.string.error_box_msg) + " " + e.getMessage();
                 }
             } else {
-                goLogin();
+                Intent intent = new Intent(context, ChatActivity.class);
+                TokenCacheController.getTokenCache(context).startRenewToken(intent, context);
             }
 
             return null;
@@ -746,7 +811,8 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                     message = context.getString(R.string.error_box_msg) + " " + e.getMessage();
                 }
             } else {
-                goLogin();
+                Intent intent = new Intent(context, ChatActivity.class);
+                TokenCacheController.getTokenCache(context).startRenewToken(intent, context);
             }
             return null;
         }

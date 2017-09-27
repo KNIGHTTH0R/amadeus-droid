@@ -21,12 +21,16 @@
     <string name="error_box_title">Something went wrong!</string>
     <string name="error_box_msg">An error has occurred during the processing of your request. Please, try again later.</string>
 
+    <string name="search_ph">Search...</string>
+
     <string name="title_activity_home">HomeActivity</string>
     <string name="title_activity_participants">ParticipantsActivity</string>
 
     <string name="chat_sender_hint">Type your message...</string>
     <string name="today">Today</string>
     <string name="yesterday">Yesterday</string>
+    <string name="favorite_messages">Favorites</string>
+    <string name="my_messages">My messages</string>
 
     <string name="crop_dialog_title">Crop Image</string>
     <string name="crop_dialog_msg">Would you like to crop the image?</string>

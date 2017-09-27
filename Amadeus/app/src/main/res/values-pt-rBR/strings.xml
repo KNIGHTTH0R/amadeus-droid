@@ -15,6 +15,8 @@
     <string name="error_box_title">Algo deu errado!</string>
     <string name="error_box_msg">Ocorreu um erro durante o processamento da sua requisição. Por favor, tente novamente mais tarde.</string>
 
+    <string name="search_ph">Buscar...</string>
+
     <string name="loading_subjects">Carregando seus assuntos...</string>
     <string name="loading_participants">Carregando participantes do assunto...</string>
     <string name="action_logout">Sair</string>
@@ -22,6 +24,8 @@
     <string name="chat_sender_hint">Escreva sua mensagem...</string>
     <string name="today">Hoje</string>
     <string name="yesterday">Ontem</string>
+    <string name="favorite_messages">Favoritas</string>
+    <string name="my_messages">Minhas mensagens</string>
 
     <string name="crop_dialog_title">Cortar imagem</string>
     <string name="crop_dialog_msg">Você gostaria de cortar essa imagem?</string>

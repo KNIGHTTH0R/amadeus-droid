@@ -10,18 +10,20 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
+import android.support.v7.widget.SearchView.OnQueryTextListener;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -78,13 +80,19 @@ public class HomeActivity extends AppCompatActivity implements SwipeRefreshLayou
     private ActionBar actionBar;
     private ActionBar.LayoutParams params;
 
+    private Toolbar toolbar;
+    private SearchView searchtoolbar;
+    private ImageView mCloseButton;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_home);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        setSearchtoolbar();
 
         actionBar = getSupportActionBar();
         actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
@@ -141,7 +149,6 @@ public class HomeActivity extends AppCompatActivity implements SwipeRefreshLayou
                 new AsyncSubjects(this, user, false).execute();
             }
         } else {
-            System.out.println("Q");
             goLogin();
         }
 
@@ -155,6 +162,47 @@ public class HomeActivity extends AppCompatActivity implements SwipeRefreshLayou
         });
     }
 
+    public void setSearchtoolbar() {
+        searchtoolbar = (SearchView) findViewById(R.id.searchtoolbar);
+        mCloseButton = (ImageView) searchtoolbar.findViewById(android.support.v7.appcompat.R.id.search_close_btn);
+        if (searchtoolbar != null) {
+            
+            searchtoolbar.setSubmitButtonEnabled(false);
+            searchtoolbar.setIconified(false);
+            searchtoolbar.clearFocus();
+
+            mCloseButton.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View v) {
+                    if(searchtoolbar.getQuery().toString().isEmpty()) {
+                        mCloseButton.setVisibility(View.GONE);
+                        searchtoolbar.setVisibility(View.GONE);
+                        toolbar.setVisibility(View.VISIBLE);
+                    } else {
+                        searchtoolbar.setQuery("", false);
+                    }
+                }
+            });
+
+            searchtoolbar.setOnQueryTextListener(new OnQueryTextListener() {
+                @Override
+                public boolean onQueryTextSubmit(String query) {
+                    callSearch(query);
+                    searchtoolbar.clearFocus();
+                    return true;
+                }
+                @Override
+                public boolean onQueryTextChange(String query) {
+                    callSearch(query);
+                    return true;
+                }
+                public void callSearch(String query) {
+                    listAdapter.getFilter().filter(query);
+                    listView.setAdapter(listAdapter);
+                }
+            });
+        }
+    }
+    
     @Override
     public boolean onCreateOptionsMenu(Menu menu){
         getMenuInflater().inflate(R.menu.menu_home, menu);
@@ -167,10 +215,20 @@ public class HomeActivity extends AppCompatActivity implements SwipeRefreshLayou
         if (item.getItemId() == R.id.logout) {
             CacheController.clearCache(this);
             goLogin();
+        } else if (item.getItemId() == R.id.action_search) {
+            toolbar.setVisibility(View.GONE);
+            searchtoolbar.setVisibility(View.VISIBLE);
+            mCloseButton.setVisibility(View.VISIBLE);
+            searchtoolbar.requestFocus();
+            //Open keyboard
+            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
+            return true;
         }
 
         return super.onOptionsItemSelected(item);
     }
+
 
     @Override
     public void onRefresh() {
@@ -186,6 +244,7 @@ public class HomeActivity extends AppCompatActivity implements SwipeRefreshLayou
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        searchtoolbar.clearFocus();
         SubjectModel subject = ((SubjectAdapter) listView.getAdapter()).getItem(position);
 
         if (subject != null) {
@@ -197,7 +256,6 @@ public class HomeActivity extends AppCompatActivity implements SwipeRefreshLayou
                 startActivity(intent);
             }
         }
-        
     }
 
     public void goLogin() {
@@ -210,7 +268,6 @@ public class HomeActivity extends AppCompatActivity implements SwipeRefreshLayou
 
     private void showSubjects() {
         listAdapter = new SubjectAdapter(this, headers);
-
         listView.setAdapter(listAdapter);
     }
 

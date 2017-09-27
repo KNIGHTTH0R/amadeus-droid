@@ -309,6 +309,9 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.dismiss();
+                        intent = new Intent(context, LoginActivity.class);
+                        startActivity(intent);
+                        finish();
                     }
                 });
 
@@ -317,4 +320,3 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         }
     }
 }
-

@@ -55,6 +55,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.List;
 
 import amadeuslms.amadeus.R;
@@ -213,7 +214,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                 handler.post(new Runnable() {
                     @Override
                     public void run() {
-                        new LoadChat(context, user, user_to).execute();
+                        new LoadChat(context, user, user_to, my_msgChecked, fav_msgChecked).execute();
                     }
                 });
             } else {
@@ -297,18 +298,20 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                     finish();
                 }
                 break;
+            */
             case R.id.my_messages:
                 if(item.isChecked()) {
                     //User has unchecked
                     my_msgChecked = false;
                     item.setChecked(false);
+
                     Handler handler = new Handler();
                     handler.post(new Runnable() {
                         @Override
                         public void run() {
-                            new LoadChat(context, user, user_to).execute();
-                        }
-                    });
+                            new LoadChat(context, user, user_to, my_msgChecked, fav_msgChecked).execute();
+                    }
+                });
                 } else {
                     //User has checked
                     my_msgChecked = true;
@@ -317,12 +320,12 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                     handler.post(new Runnable() {
                         @Override
                         public void run() {
-                            new LoadChat(context, user, user_to).execute();
+                            new LoadChat(context, user, user_to, my_msgChecked, fav_msgChecked).execute();
                         }
                     });
+                   
                 }
                 break;
-                **/
         }
         return super.onOptionsItemSelected(item);
     }
@@ -634,11 +637,14 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         private Context context;
         private UserModel user,  user_to;
         private String title, message;
+        private boolean my_msgChecked, fav_msgChecked;
 
-        public LoadChat(Context context, UserModel user, UserModel user_to) {
+        public LoadChat(Context context, UserModel user, UserModel user_to, boolean my_msgChecked, boolean fav_msgChecked) {
             this.context = context;
             this.user = user;
             this.user_to = user_to;
+            this.my_msgChecked = my_msgChecked;
+            this.fav_msgChecked = fav_msgChecked;
         }
 
         @Override
@@ -668,9 +674,18 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
 
             if (messageResponse != null) {
                 if (messageResponse.getSuccess() && messageResponse.getNumber() == 1) {
-                    messageList = messageResponse.getData().getMessages();
 
-                    adapter = new ChatAdapter(context, user, messageList, fav_msgChecked, my_msgChecked);
+                    if(my_msgChecked && !fav_msgChecked) {
+                        messageList = messageResponse.getData().getMy_messages(user);
+                    } else if(!my_msgChecked && fav_msgChecked) {
+
+                    } else if(my_msgChecked && fav_msgChecked) {
+
+                    } else {
+                        messageList = messageResponse.getData().getMessages();
+                    }
+
+                    adapter = new ChatAdapter(context, user, messageList);
 
                     recyclerView.setAdapter(adapter);
                 } else if (!TextUtils.isEmpty(messageResponse.getTitle()) && !TextUtils.isEmpty(messageResponse.getMessage())){

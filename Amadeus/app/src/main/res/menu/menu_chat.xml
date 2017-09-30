@@ -1,0 +1,21 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="amadeuslms.amadeus.activity.ChatActivity">
+    <!-- Future implementation
+    <item
+        android:id="@+id/favorite_messages"
+        android:orderInCategory="100"
+        android:title="@string/favorite_messages"
+        android:checkable="true"
+        app:actionViewClass="android.widget.CheckBox"
+        app:showAsAction="never" />
+    -->
+    <item
+        android:id="@+id/my_messages"
+        android:orderInCategory="100"
+        android:title="@string/my_messages"
+        android:checkable="true"
+        app:actionViewClass="android.widget.CheckBox"
+        app:showAsAction="never" />
+</menu>

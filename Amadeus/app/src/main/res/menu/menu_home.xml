@@ -3,6 +3,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="amadeuslms.amadeus.activity.SubjectsActivity">
 
+    <item android:id="@+id/action_search"
+        android:orderInCategory="0"
+        android:title="Searh"
+        android:icon="@drawable/ic_search"
+        app:showAsAction="always"/>
     <item
         android:id="@+id/logout"
         android:orderInCategory="100"

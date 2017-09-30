@@ -5,8 +5,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.TextView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import amadeuslms.amadeus.R;
@@ -18,16 +21,19 @@ import amadeuslms.amadeus.utils.TypefacesUtil;
  * Created by zambom on 07/07/17.
  */
 
-public class SubjectAdapter extends BaseAdapter {
+public class SubjectAdapter extends BaseAdapter implements Filterable {
 
     private Context context;
     private LayoutInflater inflater;
 
     private List<SubjectModel> subjectList;
+    private List<SubjectModel> filterSubjectList;
+    private CustomFilter filter;
 
     public SubjectAdapter(Context context, List<SubjectModel> subjectList) {
         this.context = context;
         this.subjectList = subjectList;
+        this.filterSubjectList = subjectList;
 
         inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
@@ -82,5 +88,48 @@ public class SubjectAdapter extends BaseAdapter {
     @Override
     public  long getItemId(int position) {
         return position;
+    }
+
+    @Override
+    public Filter getFilter() {
+
+        if(filter ==  null) {
+            filter = new CustomFilter();
+        }
+        return filter;
+    }
+
+    class CustomFilter extends Filter {
+        @Override
+        protected FilterResults performFiltering(CharSequence constraint) {
+            FilterResults results = new FilterResults();
+
+            if(constraint != null && constraint.length() > 0) {
+
+                constraint = constraint.toString().toUpperCase();
+
+                List<SubjectModel> filters = new ArrayList<SubjectModel>();
+
+                for (int i = 0; i < filterSubjectList.size(); i++) {
+                    if(filterSubjectList.get(i).getName().toUpperCase().contains(constraint)) {
+                        SubjectModel sm = new SubjectModel(filterSubjectList.get(i).getName(), filterSubjectList.get(i).getSlug(), filterSubjectList.get(i).isVisible(), filterSubjectList.get(i).getNotifications());
+                        filters.add(sm);
+                    }
+                }
+
+                results.count = filters.size();
+                results.values = filters;
+            } else {
+                results.count = filterSubjectList.size();
+                results.values = filterSubjectList;
+            }
+            return results;
+        }
+
+        @Override
+        protected void publishResults(CharSequence constraint, FilterResults results) {
+            subjectList = (List<SubjectModel>) results.values;
+            notifyDataSetChanged();
+        }
     }
 }

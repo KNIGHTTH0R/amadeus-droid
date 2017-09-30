@@ -23,7 +23,14 @@ public class SubjectModel implements Parcelable {
         this.setSlug(data[1]);
         this.setVisible(Boolean.parseBoolean(data[2]));
         this.setNotifications(Integer.parseInt(data[3]));
-   }
+    }
+
+    public SubjectModel(String name, String slug, boolean visible, int notifications) {
+        this.name = name;
+        this.slug = slug;
+        this.visible = visible;
+        this.notifications = notifications;
+    }
 
     public static final Parcelable.Creator<SubjectModel> CREATOR = new Parcelable.Creator<SubjectModel>() {
         @Override

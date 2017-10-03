@@ -282,49 +282,26 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
             case android.R.id.home:
                 finish();
                 break;
-            /* Future implementation - filters
             case R.id.favorite_messages:
-                if(item.isChecked()) {
-                    //User has unchecked
+                item.setChecked(!item.isChecked());
+                if(!item.isChecked()) { //User has unchecked
                     fav_msgChecked = false;
-                    item.setChecked(false);
-                    System.out.println("unchecked");
-                    finish();
-                } else {
-                    //User has checked
+                    
+                } else { //User has checked
                     fav_msgChecked = true;
-                    item.setChecked(true);
-                    System.out.println("checked");
-                    finish();
+                    
                 }
                 break;
-            */
             case R.id.my_messages:
-                if(item.isChecked()) {
-                    //User has unchecked
+                item.setChecked(!item.isChecked());
+                if(!item.isChecked()) { //User has unchecked
                     my_msgChecked = false;
-                    item.setChecked(false);
-
-                    Handler handler = new Handler();
-                    handler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            new LoadChat(context, user, user_to, my_msgChecked, fav_msgChecked).execute();
-                    }
-                });
-                } else {
-                    //User has checked
+                    adapter = new ChatAdapter(context, user, messageList);
+                } else { //User has checked
                     my_msgChecked = true;
-                    item.setChecked(true);
-                    Handler handler = new Handler();
-                    handler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            new LoadChat(context, user, user_to, my_msgChecked, fav_msgChecked).execute();
-                        }
-                    });
-                   
+                    adapter = new ChatAdapter(context, user, filterMessages());
                 }
+                recyclerView.setAdapter(adapter);
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -380,6 +357,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                     message.setUser(user);
                     message.setSubject(subject);
                     message.setCreate_date(DateUtils.currentDate());
+                    message.setFavorite(false);
 
                     new SendMessage(this, user_to, message).execute();
                 }
@@ -675,16 +653,8 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
             if (messageResponse != null) {
                 if (messageResponse.getSuccess() && messageResponse.getNumber() == 1) {
 
-                    if(my_msgChecked && !fav_msgChecked) {
-                        messageList = messageResponse.getData().getMy_messages(user);
-                    } else if(!my_msgChecked && fav_msgChecked) {
-
-                    } else if(my_msgChecked && fav_msgChecked) {
-
-                    } else {
-                        messageList = messageResponse.getData().getMessages();
-                    }
-
+                    messageList = messageResponse.getData().getMessages();
+                    
                     adapter = new ChatAdapter(context, user, messageList);
 
                     recyclerView.setAdapter(adapter);
@@ -872,5 +842,23 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                 builder.create().show();
             }
         }
+    }
+    //MARK: - Function to filter the messages
+    public List<MessageModel> filterMessages() {
+        List<MessageModel> filtered = new ArrayList<MessageModel>();
+        if(my_msgChecked && !fav_msgChecked) {
+            for(int i = 0; i < messageList.size(); ++i) {
+                if(messageList.get(i).getUser().getEmail().equals(user.getEmail())) {
+                    filtered.add(messageList.get(i));
+                }
+            }
+        } else if(!my_msgChecked && fav_msgChecked) {
+            //Future implementation
+        } else if(my_msgChecked && fav_msgChecked) {
+            //Future implementation
+        } else {
+            filtered = messageList;
+        }
+        return filtered;
     }
 }

@@ -75,6 +75,7 @@
     <string name="fa_send" translatable="false">&#xf1d8;</string>
     <string name="fa_check" translatable="false">&#xf00c;</string>
     <string name="fa_pencil" translatable="false">&#xf040;</string>
+    <string name="fa_thumb_tack" translatable="false">&#xf08d;</string>
     <string name="title_activity_chat">ChatActivity</string>
     <!-- End FontAwesome Icons -->
 </resources>

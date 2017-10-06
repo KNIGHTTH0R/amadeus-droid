@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/dp60"
+    android:weightSum="4"
+    android:background="@color/colorPrimary">
+
+    <LinearLayout
+        android:id="@+id/cancel_selection"
+        android:layout_width="0dip"
+        android:layout_height="match_parent"
+        android:layout_weight="0.7"
+        android:orientation="horizontal"
+        android:background="@drawable/chat_back_menu">
+
+        <ImageView
+            android:layout_width="0dip"
+            android:layout_height="@dimen/dp28"
+            android:layout_weight="0.7"
+            android:layout_gravity="left|center"
+            android:src="@drawable/ic_back_btn" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/favorite_btn"
+        android:layout_width="0dip"
+        android:layout_height="match_parent"
+        android:layout_weight="3.3"
+        android:gravity="right"
+        android:background="@drawable/chat_back_menu"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/fav_btn_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="@string/fa_thumb_tack"
+            android:background="@android:color/transparent"
+            android:textColor="@color/primaryWhite"
+            android:textSize="@dimen/sp18" />
+
+    </LinearLayout>
+
+</LinearLayout>

@@ -10,6 +10,15 @@ public class MessageModel {
     private UserModel user;
     private SubjectModel subject;
     private boolean favorite, isSelected;
+    private int id;
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
 
     public String getText() {
         return text;

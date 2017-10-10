@@ -317,6 +317,13 @@ public class ChatAdapter extends RecyclerView.Adapter<MessageViewHolder> {
         }
         return messagesSelected;
     }
+
+    public void updateFavorites(boolean favor) {
+        for(int i = 0; i < mSelectedPosition.size(); ++i) {
+            messageList.get(Integer.valueOf(mSelectedPosition.get(i))).setFavorite(favor);
+        }
+    }
+
     public void clearSelection() {
         for(int i = 0; i < messageList.size(); ++i) {
             messageList.get(i).setIsSelected(false);

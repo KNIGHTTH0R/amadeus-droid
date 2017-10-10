@@ -105,4 +105,30 @@ public class MessageBO {
 
         return null;
     }
+
+    public MessageResponse favorite_messages(Context context, UserModel user, MessageModel message, boolean favor) throws Exception {
+        TokenResponse token = TokenCacheController.getTokenCache(context);
+
+        StringBuilder url = new StringBuilder();
+        url.append(token.getWebserver_url());
+        url.append("/api/chat/favorite_messages/");
+
+        Map<String, String> data = new HashMap<String, String>();
+        data.put("email", user.getEmail());
+        data.put("id", String.valueOf(message.getId()));
+        data.put("favor", String.valueOf(favor));
+
+        JSONObject content = new JSONObject(data);
+
+        String json = HttpUtils.post(context, url.toString(), content.toString(), token.getToken_type() + " " + token.getAccess_token());
+
+        if (json != null && json.trim().length() > 0) {
+            System.out.println(json);
+            Type type = new TypeToken<MessageResponse>(){}.getType();
+
+            return new Gson().fromJson(json, type);
+        }
+
+        return null;
+    }
 }

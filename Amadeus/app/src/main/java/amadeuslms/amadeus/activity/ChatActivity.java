@@ -387,28 +387,41 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
             } else if (v.getId() == btnImg.getId()) {
                 onClickPermissionsGranted(v);
             } else if (v.getId() == btnFav.getId()) {
-                List<MessageModel> mMsg = adapter.getSelected_messages();   //Get selected messages
-                boolean has_favorite = false, has_noFavorite = false;
+                List<MessageModel> mMsg = adapter.getSelected_messages();
+                boolean has_noFavorite = false;
                 for(int i = 0; i < mMsg.size(); ++i) {
-                    if(mMsg.get(i).getFavorite()) {
-                        has_favorite = true;
-                    } else {
+                    if(!mMsg.get(i).getFavorite()) {
                         has_noFavorite = true;
-                    }
-                    if(has_favorite && has_noFavorite) {
                         break;
                     }
                 }
-                //MARK: - To do
-                if(has_favorite && has_noFavorite || has_favorite && !has_noFavorite) {
-                    //Favorite all messages
-                } else {
-                    //Disfavor all messages
+
+                if(has_noFavorite) {    //Favorite all messages
+                    for(int i = 0; i < mMsg.size(); ++i) {
+                        boolean last = i == mMsg.size() - 1 ? true : false;
+                        new UpdateMessage(this, user, mMsg.get(i), true).execute();
+                    }
+                } else {    //Disfavor all messages
+                    for(int i = 0; i < mMsg.size(); ++i) {
+                        boolean last = i == mMsg.size() - 1 ? true : false;
+                        new UpdateMessage(this, user, mMsg.get(i), false).execute();
+                    }
                 }
+
                 actionBar.setCustomView(actionBarCustom, params);
                 hideMenu = false;
                 invalidateOptionsMenu();
-                adapter.clearSelection();   //Deselect all messages
+
+                adapter.updateFavorites(has_noFavorite);    //Update favorite states just for user view
+                adapter.clearSelection();                   //Deselect all messages
+
+                if(fav_msgChecked || my_msgChecked) {       //Clear filters
+                    fav_msgChecked = false;
+                    my_msgChecked = false;
+                    adapter = new ChatAdapter(context, user, filterMessages());
+                    setAdapterListener();
+                    recyclerView.setAdapter(adapter);
+                }
             }
         } else {
             Intent intent = new Intent(v.getContext(), ChatActivity.class);
@@ -645,6 +658,72 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
 
         recyclerView.setVisibility(View.VISIBLE);
         recyclerView.smoothScrollToPosition(0);
+    }
+
+    private class UpdateMessage extends AsyncTask<Void, Void, MessageResponse> {
+        private Context context;
+        private UserModel user;
+        private MessageModel message_upd;
+        private String title, message;
+        private boolean favor;
+        private boolean last;
+
+        public UpdateMessage(Context context, UserModel user, MessageModel message_upd, boolean favor) {
+            this.context = context;
+            this.user = user;
+            this.message_upd = message_upd;
+            this.favor = favor;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected MessageResponse doInBackground(Void... params) {
+            if(!TokenCacheController.getTokenCache(context).isToken_expired()) {
+                try {
+                    return new MessageBO().favorite_messages(context, user, message_upd, favor);
+                } catch (Exception e){
+                    title = context.getString(R.string.error_box_title);
+                    message = context.getString(R.string.error_box_msg) + " " + e.getMessage();
+                }
+            } else {
+                Intent intent = new Intent(context, ChatActivity.class);
+                TokenCacheController.getTokenCache(context).startRenewToken(intent, context);
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(MessageResponse messageResponse) {
+            super.onPostExecute(messageResponse);
+
+            if (messageResponse != null) {
+                if (messageResponse.getSuccess() && messageResponse.getNumber() == 1) {
+
+                } else if (!TextUtils.isEmpty(messageResponse.getTitle()) && !TextUtils.isEmpty(messageResponse.getMessage())){
+                    title = messageResponse.getTitle();
+                    message = messageResponse.getMessage();
+                }
+            }
+
+            if(!TextUtils.isEmpty(title) && !TextUtils.isEmpty(message)){
+                AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                builder.setTitle(title);
+                builder.setMessage(message);
+
+                builder.setPositiveButton(getResources().getString(R.string.ok), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+
+                builder.create().show();
+            }
+        }
     }
 
     private class LoadChat extends AsyncTask<Void, Void, MessageResponse> {

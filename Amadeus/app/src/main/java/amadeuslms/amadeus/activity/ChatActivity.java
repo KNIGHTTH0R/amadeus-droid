@@ -296,18 +296,19 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                 item.setChecked(!item.isChecked());
                 if(!item.isChecked()) { //User has unchecked
                     fav_msgChecked = false;
-                    adapter = new ChatAdapter(context, user, messageList);
+                    adapter = new ChatAdapter(context, user, filterMessages());
                 } else { //User has checked
                     fav_msgChecked = true;
-                    //System.out.println("favoritaaaaaaas");
                     adapter = new ChatAdapter(context, user, filterMessages());
                 }
+                setAdapterListener();
+                recyclerView.setAdapter(adapter);
                 break;
             case R.id.my_messages:
                 item.setChecked(!item.isChecked());
                 if(!item.isChecked()) { //User has unchecked
                     my_msgChecked = false;
-                    adapter = new ChatAdapter(context, user, messageList);
+                    adapter = new ChatAdapter(context, user, filterMessages());
                 } else { //User has checked
                     my_msgChecked = true;
                     adapter = new ChatAdapter(context, user, filterMessages());
@@ -686,7 +687,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                 if (messageResponse.getSuccess() && messageResponse.getNumber() == 1) {
 
                     messageList = messageResponse.getData().getMessages();
-                    
+
                     adapter = new ChatAdapter(context, user, messageList);
                     setAdapterListener();
 
@@ -892,7 +893,11 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                 }
             }
         } else if(my_msgChecked && fav_msgChecked) {
-            //Future implementation
+            for(int i = 0; i < messageList.size(); ++i) {
+                if(messageList.get(i).getUser().getEmail().equals(user.getEmail()) && messageList.get(i).getFavorite()) {
+                    filtered.add(messageList.get(i));
+                }
+            }
         } else {
             filtered = messageList;
         }

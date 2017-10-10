@@ -125,7 +125,6 @@ public class ParticipantsActivity extends AppCompatActivity implements SwipeRefr
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 TokenCacheController.getTokenCache(this).startRenewToken(intent, this);
-                System.out.println("opa");
             } else {
                 finish();
             }

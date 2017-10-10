@@ -117,11 +117,16 @@ public class HomeActivity extends AppCompatActivity implements SwipeRefreshLayou
             ivPhoto = (ImageView) actionBarCustom.findViewById(R.id.user_image);
 
             ImageUtils img = new ImageUtils(this);
-            
-            if(user.getImage_url() != null && !user.getImage_url().equals("") && TokenCacheController.hasTokenCache(this) && !TokenCacheController.getTokenCache(this).isToken_expired()) {
+
+            if (user.getImage_url() != null && !user.getImage_url().equals("") && TokenCacheController.hasTokenCache(this) && !TokenCacheController.getTokenCache(this).isToken_expired()) {
                 String path = TokenCacheController.getTokenCache(this).getWebserver_url() + user.getImage_url();
 
                 Picasso.with(this).load(path).transform(new CircleTransformUtils()).into(ivPhoto);
+            } else if (TokenCacheController.getTokenCache(this).isToken_expired()){
+                Intent intent = new Intent(this, HomeActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                TokenCacheController.getTokenCache(this).startRenewToken(intent, this);
             } else {
                 try{
                     final InputStream is = this.getAssets().open("images/no_image.png");

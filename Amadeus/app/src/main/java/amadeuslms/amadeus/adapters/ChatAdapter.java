@@ -20,6 +20,7 @@ import com.bumptech.glide.request.target.Target;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import amadeuslms.amadeus.R;
@@ -39,12 +40,23 @@ public class ChatAdapter extends RecyclerView.Adapter<MessageViewHolder> {
 
     private Context context;
     private UserModel user;
-    private List<MessageModel> messageList;
+    private List<MessageModel> messageList, messagesSelected = new ArrayList<MessageModel>();
+    private ArrayList<String> mSelectedPosition = new ArrayList<String>();
 
     public ChatAdapter(Context context, UserModel user, List<MessageModel> messageList) {
         this.context = context;
         this.user = user;
         this.messageList = messageList;
+    }
+
+    public interface OnMessageSelectedListener {
+        void onSelected();
+        void onDeselected();
+    }
+
+    OnMessageSelectedListener mMsgListener;
+    public void setOnMessageSelectedListener(OnMessageSelectedListener onMessageSelectedListener) {
+        mMsgListener = onMessageSelectedListener;
     }
 
     @Override
@@ -57,7 +69,7 @@ public class ChatAdapter extends RecyclerView.Adapter<MessageViewHolder> {
     }
 
     @Override
-    public void onBindViewHolder(final MessageViewHolder holder, int position) {
+    public void onBindViewHolder(final MessageViewHolder holder, final int position) {
         final MessageModel message = messageList.get(position);
 
         if (message != null) {
@@ -82,10 +94,56 @@ public class ChatAdapter extends RecyclerView.Adapter<MessageViewHolder> {
             holder.flReceived.setVisibility(FrameLayout.GONE);
 
             if (message.getUser().getEmail().equals(user.getEmail())) {
+
+                if(mSelectedPosition.contains(String.valueOf(position))) {
+                    holder.flSent.setActivated(true);
+                } else {
+                    holder.flSent.setActivated(false);
+                }
+
                 holder.flSent.setVisibility(FrameLayout.VISIBLE);
                 holder.tvMsgSent.setText(StringUtils.stripTags(message.getText()));
                 holder.tvDateSent.setText(DateUtils.getHour(message.getCreate_date()));
+                //MARK: - Set action when select message
+                holder.flSent.setOnLongClickListener(new View.OnLongClickListener() {
+                    @Override
+                    public boolean onLongClick(View v) {
+                        message.setIsSelected(!message.getIsSelected());
+                        if(message.getIsSelected()) {
+                            if(mSelectedPosition.size() == 0 && mMsgListener != null) {
+                                mMsgListener.onSelected();
+                            }
+                            mSelectedPosition.add(String.valueOf(position));
+                        } else {
+                            mSelectedPosition.remove(String.valueOf(position));
+                            if(mSelectedPosition.size() == 0 && mMsgListener != null) {
+                                mMsgListener.onDeselected();
+                            }
+                        }
 
+                        notifyDataSetChanged();
+
+                        return true;
+                    }
+                });
+                holder.flSent.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if(!mSelectedPosition.isEmpty()) {
+                            message.setIsSelected(!message.getIsSelected());
+                            if(message.getIsSelected()) {
+                                mSelectedPosition.add(String.valueOf(position));
+                            } else {
+                                mSelectedPosition.remove(String.valueOf(position));
+                                if(mSelectedPosition.size() == 0 && mMsgListener != null) {
+                                    mMsgListener.onDeselected();
+                                }
+                            }
+                            notifyDataSetChanged();
+                        }
+                    }
+                });
+                //END MARK
                 if (message.getImage_url() != null && !message.getImage_url().equals("") && TokenCacheController.hasTokenCache(context)) {
                     final String path = TokenCacheController.getTokenCache(context).getWebserver_url() + message.getImage_url();
 
@@ -138,10 +196,54 @@ public class ChatAdapter extends RecyclerView.Adapter<MessageViewHolder> {
                     holder.flImgSent.setVisibility(FrameLayout.GONE);
                 }
             } else {
+
+                if(mSelectedPosition.contains(String.valueOf(position))) {
+                    holder.flReceived.setActivated(true);
+                } else {
+                    holder.flReceived.setActivated(false);
+                }
+
                 holder.flReceived.setVisibility(FrameLayout.VISIBLE);
                 holder.tvMsgReceived.setText(StringUtils.stripTags(message.getText()));
                 holder.tvDateReceived.setText(DateUtils.getHour(message.getCreate_date()));
-
+                //MARK: - Set action when select message
+                holder.flReceived.setOnLongClickListener(new View.OnLongClickListener() {
+                    @Override
+                    public boolean onLongClick(View v) {
+                        message.setIsSelected(!message.getIsSelected());
+                        if(message.getIsSelected()) {
+                            if(mSelectedPosition.size() == 0 && mMsgListener != null) {
+                                mMsgListener.onSelected();
+                            }
+                            mSelectedPosition.add(String.valueOf(position));
+                        } else {
+                            mSelectedPosition.remove(String.valueOf(position));
+                            if(mSelectedPosition.size() == 0 && mMsgListener != null) {
+                                mMsgListener.onDeselected();
+                            }
+                        }
+                        notifyDataSetChanged();
+                        return true;
+                    }
+                });
+                holder.flReceived.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if(!mSelectedPosition.isEmpty()) {
+                            message.setIsSelected(!message.getIsSelected());
+                            if(message.getIsSelected()) {
+                                mSelectedPosition.add(String.valueOf(position));
+                            } else {
+                                mSelectedPosition.remove(String.valueOf(position));
+                                if(mSelectedPosition.size() == 0 && mMsgListener != null) {
+                                    mMsgListener.onDeselected();
+                                }
+                            }
+                            notifyDataSetChanged();
+                        }
+                    }
+                });
+                //END MARK
                 if (message.getImage_url() != null && !message.getImage_url().equals("") && TokenCacheController.hasTokenCache(context)) {
                     final String path = TokenCacheController.getTokenCache(context).getWebserver_url() + message.getImage_url();
 
@@ -208,4 +310,20 @@ public class ChatAdapter extends RecyclerView.Adapter<MessageViewHolder> {
             notifyItemInserted(position);
         }
     }
+    //MARK: - About list of selected messages
+    public List<MessageModel> getSelected_messages() {
+        for(int i = 0; i < mSelectedPosition.size(); ++i) {
+            messagesSelected.add(messageList.get(Integer.valueOf(mSelectedPosition.get(i))));
+        }
+        return messagesSelected;
+    }
+    public void clearSelection() {
+        for(int i = 0; i < messageList.size(); ++i) {
+            messageList.get(i).setIsSelected(false);
+        }
+        mSelectedPosition.clear();
+        messagesSelected.clear();
+        notifyDataSetChanged();
+    }
+    //END MARK
 }

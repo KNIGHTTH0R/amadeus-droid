@@ -39,53 +39,62 @@
             android:id="@+id/received_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:clickable="true"
             android:gravity="left">
 
-            <LinearLayout
-                style="@style/msgReceived"
-                android:layout_width="wrap_content"
+            <FrameLayout
+                android:id="@+id/received_selection"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
+                android:foreground="@drawable/selection">
 
-                <FrameLayout
-                    android:id="@+id/received_img_container"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-
-                    <ImageView
-                        android:id="@+id/received_img"
-                        android:layout_width="@dimen/dp100"
-                        android:layout_height="@dimen/dp100"
-                        android:scaleType="centerCrop"
-                        android:layout_gravity="center_vertical" />
-
-                    <ProgressBar
-                        android:id="@+id/received_progress"
-                        android:layout_width="@dimen/dp50"
-                        android:layout_height="@dimen/dp50"
-                        android:layout_gravity="center" />
-
-                </FrameLayout>
-
-                <TextView
-                    android:id="@+id/received_text"
-                    android:layout_width="match_parent"
+                <LinearLayout
+                    style="@style/msgReceived"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/primaryBlack"
-                    android:textSize="@dimen/sp14" />
+                    android:orientation="vertical">
 
-                <TextView
-                    android:id="@+id/received_date"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="@dimen/dp5"
-                    android:layout_marginRight="@dimen/dp5"
-                    android:textColor="@color/darkerGray"
-                    android:textSize="@dimen/sp10"
-                    android:gravity="right"
-                    android:layout_gravity="bottom|right" />
+                    <FrameLayout
+                        android:id="@+id/received_img_container"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
 
-            </LinearLayout>
+                        <ImageView
+                            android:id="@+id/received_img"
+                            android:layout_width="@dimen/dp100"
+                            android:layout_height="@dimen/dp100"
+                            android:scaleType="centerCrop"
+                            android:layout_gravity="center_vertical" />
+
+                        <ProgressBar
+                            android:id="@+id/received_progress"
+                            android:layout_width="@dimen/dp50"
+                            android:layout_height="@dimen/dp50"
+                            android:layout_gravity="center" />
+
+                    </FrameLayout>
+
+                    <TextView
+                        android:id="@+id/received_text"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/primaryBlack"
+                        android:textSize="@dimen/sp14" />
+
+                    <TextView
+                        android:id="@+id/received_date"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="@dimen/dp5"
+                        android:layout_marginRight="@dimen/dp5"
+                        android:textColor="@color/darkerGray"
+                        android:textSize="@dimen/sp10"
+                        android:gravity="right"
+                        android:layout_gravity="bottom|right" />
+
+                </LinearLayout>
+
+            </FrameLayout>
 
         </FrameLayout>
 
@@ -93,53 +102,62 @@
             android:id="@+id/sent_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:clickable="true"
             android:gravity="right">
 
-            <LinearLayout
-                style="@style/msgSent"
-                android:layout_width="wrap_content"
+            <FrameLayout
+                android:id="@+id/sent_selection"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
+                android:foreground="@drawable/selection">
 
-                <FrameLayout
-                    android:id="@+id/sent_img_container"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-
-                    <ImageView
-                        android:id="@+id/sent_img"
-                        android:layout_width="@dimen/dp100"
-                        android:layout_height="@dimen/dp100"
-                        android:scaleType="centerCrop"
-                        android:layout_gravity="center_vertical" />
-
-                    <ProgressBar
-                        android:id="@+id/sent_progress"
-                        android:layout_width="@dimen/dp50"
-                        android:layout_height="@dimen/dp50"
-                        android:layout_gravity="center" />
-
-                </FrameLayout>
-
-                <TextView
-                    android:id="@+id/sent_text"
-                    android:layout_width="match_parent"
+                <LinearLayout
+                    style="@style/msgSent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/primaryBlack"
-                    android:textSize="@dimen/sp14" />
+                    android:orientation="vertical">
 
-                <TextView
-                    android:id="@+id/sent_date"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="@dimen/dp5"
-                    android:layout_marginRight="@dimen/dp5"
-                    android:textColor="@color/darkerGray"
-                    android:textSize="@dimen/sp10"
-                    android:gravity="right"
-                    android:layout_gravity="bottom|right" />
+                    <FrameLayout
+                        android:id="@+id/sent_img_container"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
 
-            </LinearLayout>
+                        <ImageView
+                            android:id="@+id/sent_img"
+                            android:layout_width="@dimen/dp100"
+                            android:layout_height="@dimen/dp100"
+                            android:scaleType="centerCrop"
+                            android:layout_gravity="center_vertical" />
+
+                        <ProgressBar
+                            android:id="@+id/sent_progress"
+                            android:layout_width="@dimen/dp50"
+                            android:layout_height="@dimen/dp50"
+                            android:layout_gravity="center" />
+
+                    </FrameLayout>
+
+                    <TextView
+                        android:id="@+id/sent_text"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/primaryBlack"
+                        android:textSize="@dimen/sp14" />
+
+                    <TextView
+                        android:id="@+id/sent_date"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="@dimen/dp5"
+                        android:layout_marginRight="@dimen/dp5"
+                        android:textColor="@color/darkerGray"
+                        android:textSize="@dimen/sp10"
+                        android:gravity="right"
+                        android:layout_gravity="bottom|right" />
+
+                </LinearLayout>
+
+            </FrameLayout>
 
         </FrameLayout>
 

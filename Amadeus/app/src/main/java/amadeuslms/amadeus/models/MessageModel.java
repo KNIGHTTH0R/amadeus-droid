@@ -9,6 +9,7 @@ public class MessageModel {
     private String text, image_url, create_date;
     private UserModel user;
     private SubjectModel subject;
+    private boolean favorite, isSelected;
 
     public String getText() {
         return text;
@@ -48,5 +49,21 @@ public class MessageModel {
 
     public void setSubject(SubjectModel subject) {
         this.subject = subject;
+    }
+
+    public boolean getFavorite() {
+        return favorite;
+    }
+
+    public void setFavorite(boolean favorite) {
+        this.favorite = favorite;
+    }
+
+    public boolean getIsSelected() {
+        return isSelected;
+    }
+
+    public void setIsSelected(boolean isSelected) {
+        this.isSelected = isSelected;
     }
 }

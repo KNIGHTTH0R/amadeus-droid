@@ -34,5 +34,6 @@
     <color name="black15_transparency">#26000000</color>
     <color name="black10_transparency">#1A000000</color>
     <color name="black5_transparency">#0D000000</color>
-    <color name="black0_transparency">#00000000</color>x
+    <color name="black0_transparency">#00000000</color>
+    <color name="light_blue50_transparency">#7f91d8ff</color>
 </resources>

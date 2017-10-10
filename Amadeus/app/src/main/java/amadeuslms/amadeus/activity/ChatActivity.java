@@ -1,12 +1,10 @@
 package amadeuslms.amadeus.activity;
 
-import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
@@ -36,12 +34,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.soundcloud.android.crop.Crop;
 import com.squareup.picasso.Picasso;
@@ -50,7 +46,6 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -61,8 +56,6 @@ import java.util.List;
 import amadeuslms.amadeus.R;
 import amadeuslms.amadeus.adapters.ChatAdapter;
 import amadeuslms.amadeus.bo.MessageBO;
-import amadeuslms.amadeus.bo.UserBO;
-import amadeuslms.amadeus.cache.CacheController;
 import amadeuslms.amadeus.cache.TokenCacheController;
 import amadeuslms.amadeus.cache.UserCacheController;
 import amadeuslms.amadeus.events.NewMessageEvent;
@@ -70,8 +63,6 @@ import amadeuslms.amadeus.models.MessageModel;
 import amadeuslms.amadeus.models.SubjectModel;
 import amadeuslms.amadeus.models.UserModel;
 import amadeuslms.amadeus.response.MessageResponse;
-import amadeuslms.amadeus.response.TokenResponse;
-import amadeuslms.amadeus.response.UserResponse;
 import amadeuslms.amadeus.utils.CircleTransformUtils;
 import amadeuslms.amadeus.utils.DateUtils;
 import amadeuslms.amadeus.utils.ImageUtils;
@@ -97,6 +88,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     public boolean WRITE_GRANTED = false;
     public boolean CAMERA_GRANTED = false;
 
+    private boolean hideMenu = false;
     private boolean fav_msgChecked = false;
     private boolean my_msgChecked = false;
 
@@ -110,9 +102,9 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     private TextView tvUser;
     private EditText etMsg;
     private ImageView ivImg;
-    private Button btnSend, btnImg;
+    private Button btnSend, btnImg, btnFav;
 
-    private LinearLayout actionBarCustom, llBack;
+    private LinearLayout actionBarCustom, llBack, selectionBarCustom, backSelect;
 
     private ActionBar actionBar;
     private ActionBar.LayoutParams params;
@@ -151,6 +143,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
             );
 
             actionBarCustom = (LinearLayout) getLayoutInflater().inflate(R.layout.custom_chat_actionbar, null);
+            selectionBarCustom = (LinearLayout) getLayoutInflater().inflate(R.layout.chat_selection_actionbar, null);
 
             tvUser = (TextView) actionBarCustom.findViewById(R.id.chat_user);
             ivImg = (ImageView) actionBarCustom.findViewById(R.id.menu_image);
@@ -186,6 +179,17 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
             actionBar.setCustomView(actionBarCustom, params);
             toolbar.setContentInsetsAbsolute(0, 0);
 
+            backSelect = (LinearLayout) selectionBarCustom.findViewById(R.id.cancel_selection);
+            backSelect.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    actionBar.setCustomView(actionBarCustom, params);
+                    hideMenu = false;
+                    invalidateOptionsMenu();
+                    adapter.clearSelection();   //Deselect all messages
+                }
+            });
+
             etMsg = (EditText) findViewById(R.id.sender_msg);
             btnSend = (Button) findViewById(R.id.sender_btn);
             btnImg = (Button) findViewById(R.id.sender_img);
@@ -194,6 +198,10 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
 
             btnSend.setOnClickListener(this);
             btnImg.setOnClickListener(this);
+
+            btnFav = (Button) selectionBarCustom.findViewById(R.id.fav_btn_text);
+            TypefacesUtil.setFontAwesome(this, btnFav);
+            btnFav.setOnClickListener(this);
 
             recyclerView    = (RecyclerView)    findViewById(R.id.chat_recycler);
 
@@ -214,7 +222,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                 handler.post(new Runnable() {
                     @Override
                     public void run() {
-                        new LoadChat(context, user, user_to, my_msgChecked, fav_msgChecked).execute();
+                        new LoadChat(context, user, user_to).execute();
                     }
                 });
             } else {
@@ -272,7 +280,9 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu){
-        getMenuInflater().inflate(R.menu.menu_chat, menu);
+        if(!hideMenu) {
+            getMenuInflater().inflate(R.menu.menu_chat, menu);
+        }
         return true;
     }
 
@@ -286,10 +296,11 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                 item.setChecked(!item.isChecked());
                 if(!item.isChecked()) { //User has unchecked
                     fav_msgChecked = false;
-                    
+                    adapter = new ChatAdapter(context, user, messageList);
                 } else { //User has checked
                     fav_msgChecked = true;
-                    
+                    //System.out.println("favoritaaaaaaas");
+                    adapter = new ChatAdapter(context, user, filterMessages());
                 }
                 break;
             case R.id.my_messages:
@@ -301,6 +312,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                     my_msgChecked = true;
                     adapter = new ChatAdapter(context, user, filterMessages());
                 }
+                setAdapterListener();
                 recyclerView.setAdapter(adapter);
                 break;
         }
@@ -367,12 +379,35 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                     if(WRITE_GRANTED) {
                         askForPermission(Manifest.permission.CAMERA,CAMERA);
                         if(CAMERA_GRANTED) {
-                          onClickPermissionsGranted(v);
+                            onClickPermissionsGranted(v);
                         }
                     }
                 }
             } else if (v.getId() == btnImg.getId()) {
                 onClickPermissionsGranted(v);
+            } else if (v.getId() == btnFav.getId()) {
+                List<MessageModel> mMsg = adapter.getSelected_messages();   //Get selected messages
+                boolean has_favorite = false, has_noFavorite = false;
+                for(int i = 0; i < mMsg.size(); ++i) {
+                    if(mMsg.get(i).getFavorite()) {
+                        has_favorite = true;
+                    } else {
+                        has_noFavorite = true;
+                    }
+                    if(has_favorite && has_noFavorite) {
+                        break;
+                    }
+                }
+                //MARK: - To do
+                if(has_favorite && has_noFavorite || has_favorite && !has_noFavorite) {
+                    //Favorite all messages
+                } else {
+                    //Disfavor all messages
+                }
+                actionBar.setCustomView(actionBarCustom, params);
+                hideMenu = false;
+                invalidateOptionsMenu();
+                adapter.clearSelection();   //Deselect all messages
             }
         } else {
             Intent intent = new Intent(v.getContext(), ChatActivity.class);
@@ -615,14 +650,11 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         private Context context;
         private UserModel user,  user_to;
         private String title, message;
-        private boolean my_msgChecked, fav_msgChecked;
 
-        public LoadChat(Context context, UserModel user, UserModel user_to, boolean my_msgChecked, boolean fav_msgChecked) {
+        public LoadChat(Context context, UserModel user, UserModel user_to) {
             this.context = context;
             this.user = user;
             this.user_to = user_to;
-            this.my_msgChecked = my_msgChecked;
-            this.fav_msgChecked = fav_msgChecked;
         }
 
         @Override
@@ -656,6 +688,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                     messageList = messageResponse.getData().getMessages();
                     
                     adapter = new ChatAdapter(context, user, messageList);
+                    setAdapterListener();
 
                     recyclerView.setAdapter(adapter);
                 } else if (!TextUtils.isEmpty(messageResponse.getTitle()) && !TextUtils.isEmpty(messageResponse.getMessage())){
@@ -853,12 +886,35 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                 }
             }
         } else if(!my_msgChecked && fav_msgChecked) {
-            //Future implementation
+            for(int i = 0; i < messageList.size(); ++i) {
+                if(messageList.get(i).getFavorite()) {
+                    filtered.add(messageList.get(i));
+                }
+            }
         } else if(my_msgChecked && fav_msgChecked) {
             //Future implementation
         } else {
             filtered = messageList;
         }
         return filtered;
+    }
+
+    public void setAdapterListener() {
+        if(adapter != null) {
+            adapter.setOnMessageSelectedListener(new ChatAdapter.OnMessageSelectedListener() {
+                public void onSelected() {
+                    hideMenu = true;
+                    invalidateOptionsMenu();
+                    actionBar.setCustomView(selectionBarCustom, params);
+                    System.out.println("Link Start");
+                }
+                public void onDeselected() {
+                    actionBar.setCustomView(actionBarCustom, params);
+                    hideMenu = false;
+                    invalidateOptionsMenu();
+                    adapter.clearSelection();   //Deselect all messages
+                }
+            });
+        }
     }
 }

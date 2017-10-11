@@ -396,17 +396,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                     }
                 }
 
-                if(has_noFavorite) {    //Favorite all messages
-                    for(int i = 0; i < mMsg.size(); ++i) {
-                        boolean last = i == mMsg.size() - 1 ? true : false;
-                        new UpdateMessage(this, user, mMsg.get(i), true).execute();
-                    }
-                } else {    //Disfavor all messages
-                    for(int i = 0; i < mMsg.size(); ++i) {
-                        boolean last = i == mMsg.size() - 1 ? true : false;
-                        new UpdateMessage(this, user, mMsg.get(i), false).execute();
-                    }
-                }
+                new UpdateMessage(this, user, mMsg, has_noFavorite).execute();
 
                 actionBar.setCustomView(actionBarCustom, params);
                 hideMenu = false;
@@ -663,12 +653,11 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     private class UpdateMessage extends AsyncTask<Void, Void, MessageResponse> {
         private Context context;
         private UserModel user;
-        private MessageModel message_upd;
+        private List<MessageModel> message_upd;
         private String title, message;
         private boolean favor;
-        private boolean last;
 
-        public UpdateMessage(Context context, UserModel user, MessageModel message_upd, boolean favor) {
+        public UpdateMessage(Context context, UserModel user, List<MessageModel> message_upd, boolean favor) {
             this.context = context;
             this.user = user;
             this.message_upd = message_upd;

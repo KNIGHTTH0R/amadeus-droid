@@ -10,6 +10,7 @@ import org.json.JSONObject;
 
 import java.lang.reflect.Type;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import amadeuslms.amadeus.cache.TokenCacheController;
@@ -106,7 +107,7 @@ public class MessageBO {
         return null;
     }
 
-    public MessageResponse favorite_messages(Context context, UserModel user, MessageModel message, boolean favor) throws Exception {
+    public MessageResponse favorite_messages(Context context, UserModel user, List<MessageModel> message, boolean favor) throws Exception {
         TokenResponse token = TokenCacheController.getTokenCache(context);
 
         StringBuilder url = new StringBuilder();
@@ -115,8 +116,13 @@ public class MessageBO {
 
         Map<String, String> data = new HashMap<String, String>();
         data.put("email", user.getEmail());
-        data.put("id", String.valueOf(message.getId()));
+        data.put("list_size", String.valueOf(message.size()));
+        //data.put("id", String.valueOf(message.getId()));
         data.put("favor", String.valueOf(favor));
+
+        for(int i = 0; i < message.size(); ++i) {
+            data.put(String.valueOf(i), String.valueOf(message.get(i).getId()));
+        }
 
         JSONObject content = new JSONObject(data);
 

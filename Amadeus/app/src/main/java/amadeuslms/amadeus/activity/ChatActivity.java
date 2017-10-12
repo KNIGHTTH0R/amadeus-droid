@@ -85,12 +85,18 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     static final int WRITE_EXST = 3;
     static final int CAMERA = 5;
 
+    private static final int PAGE_SIZE = 20;
+
     public boolean WRITE_GRANTED = false;
     public boolean CAMERA_GRANTED = false;
 
     private boolean hideMenu = false;
     private boolean fav_msgChecked = false;
     private boolean my_msgChecked = false;
+    private boolean isLoading = false;
+    private boolean isLastPage = false;
+
+    private int actual_page = 0;
 
     private ChatAdapter adapter;
     private RecyclerView recyclerView;
@@ -105,6 +111,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     private Button btnSend, btnImg, btnFav;
 
     private LinearLayout actionBarCustom, llBack, selectionBarCustom, backSelect;
+    private LinearLayoutManager linearLayoutManager;
 
     private ActionBar actionBar;
     private ActionBar.LayoutParams params;
@@ -207,9 +214,11 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
 
             recyclerView.setHasFixedSize(true);
 
-            LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
+            linearLayoutManager = new LinearLayoutManager(this);
             linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
             linearLayoutManager.setReverseLayout(true);
+
+            recyclerView.addOnScrollListener(recyclerViewOnScrollListener);
 
             recyclerView.setLayoutManager(linearLayoutManager);
 
@@ -241,6 +250,27 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
             finish();
         }
     }
+
+    private RecyclerView.OnScrollListener recyclerViewOnScrollListener = new RecyclerView.OnScrollListener() {
+        @Override
+        public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+            super.onScrollStateChanged(recyclerView, newState);
+        }
+        @Override
+        public void onScrolled(RecyclerView recyclerView, int dx,  int dy) {
+            super.onScrolled(recyclerView, dx, dy);
+            int visibleItemCount = linearLayoutManager.getChildCount();
+            int totalItemCount = linearLayoutManager.getItemCount();
+            int firstVisibleItemPosition = linearLayoutManager.findFirstVisibleItemPosition();
+
+            if(!isLoading && !isLastPage) {
+                if ((visibleItemCount + firstVisibleItemPosition) >= totalItemCount && firstVisibleItemPosition >= 0 && totalItemCount >= PAGE_SIZE) {
+                    isLoading = true;
+                    new LoadPage(context, user, user_to, actual_page+1).execute();
+                }
+            }
+        }
+    };
     
     private void askForPermission(String permission, Integer requestCode) {
         if (ContextCompat.checkSelfPermission(ChatActivity.this, permission) != PackageManager.PERMISSION_GRANTED) {
@@ -735,7 +765,77 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         protected MessageResponse doInBackground(Void... params) {
             if(!TokenCacheController.getTokenCache(context).isToken_expired()) {
                 try {
-                    return new MessageBO().get_messages(context, user, user_to);
+                    return new MessageBO().get_messages(context, user, user_to, 1, PAGE_SIZE);
+                } catch (Exception e){
+                    title = context.getString(R.string.error_box_title);
+                    message = context.getString(R.string.error_box_msg) + " " + e.getMessage();
+                }
+            } else {
+                Intent intent = new Intent(context, ChatActivity.class);
+                TokenCacheController.getTokenCache(context).startRenewToken(intent, context);
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(MessageResponse messageResponse) {
+            super.onPostExecute(messageResponse);
+
+            if (messageResponse != null) {
+                if (messageResponse.getSuccess() && messageResponse.getNumber() == 1) {
+                    actual_page += 1;
+                    messageList = messageResponse.getData().getMessages();
+
+                    adapter = new ChatAdapter(context, user, messageList);
+                    setAdapterListener();
+
+                    recyclerView.setAdapter(adapter);
+                } else if (!TextUtils.isEmpty(messageResponse.getTitle()) && !TextUtils.isEmpty(messageResponse.getMessage())){
+                    title = messageResponse.getTitle();
+                    message = messageResponse.getMessage();
+                }
+            }
+
+            if(!TextUtils.isEmpty(title) && !TextUtils.isEmpty(message)){
+                AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                builder.setTitle(title);
+                builder.setMessage(message);
+
+                builder.setPositiveButton(getResources().getString(R.string.ok), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+
+                builder.create().show();
+            }
+        }
+    }
+
+    private class LoadPage extends AsyncTask<Void, Void, MessageResponse> {
+        private Context context;
+        private UserModel user,  user_to;
+        private String title, message;
+        private int page_number;
+
+        public LoadPage(Context context, UserModel user, UserModel user_to, int page_number) {
+            this.context = context;
+            this.user = user;
+            this.user_to = user_to;
+            this.page_number = page_number;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected MessageResponse doInBackground(Void... params) {
+            if(!TokenCacheController.getTokenCache(context).isToken_expired()) {
+                try {
+                    return new MessageBO().get_messages(context, user, user_to, page_number, PAGE_SIZE);
                 } catch (Exception e){
                     title = context.getString(R.string.error_box_title);
                     message = context.getString(R.string.error_box_msg) + " " + e.getMessage();
@@ -754,12 +854,26 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
             if (messageResponse != null) {
                 if (messageResponse.getSuccess() && messageResponse.getNumber() == 1) {
 
-                    messageList = messageResponse.getData().getMessages();
+                    actual_page += 1;
 
-                    adapter = new ChatAdapter(context, user, messageList);
-                    setAdapterListener();
+                    List<MessageModel> messagesLoaded = messageResponse.getData().getMessages();
 
-                    recyclerView.setAdapter(adapter);
+                    if(!messagesLoaded.isEmpty()) {
+
+                        for(int i = 0; i < messagesLoaded.size(); ++i) {
+                            ((ChatAdapter) recyclerView.getAdapter()).addListItem(messagesLoaded.get(i), ((ChatAdapter) recyclerView.getAdapter()).getItemCount());
+                        }
+
+                        if(messagesLoaded.size() < PAGE_SIZE) {
+                            isLastPage = true;
+                        }
+                    } else {
+                        isLastPage = true;
+                    }
+                    isLoading = false;
+
+                    recyclerView.smoothScrollToPosition((actual_page-1) * PAGE_SIZE);
+
                 } else if (!TextUtils.isEmpty(messageResponse.getTitle()) && !TextUtils.isEmpty(messageResponse.getMessage())){
                     title = messageResponse.getTitle();
                     message = messageResponse.getMessage();

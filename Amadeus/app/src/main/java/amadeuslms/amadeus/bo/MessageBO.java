@@ -26,7 +26,7 @@ import amadeuslms.amadeus.utils.HttpUtils;
 
 public class MessageBO {
 
-    public MessageResponse get_messages(Context context, UserModel user, UserModel user_to) throws Exception {
+    public MessageResponse get_messages(Context context, UserModel user, UserModel user_to, int page, int page_size) throws Exception {
         TokenResponse token = TokenCacheController.getTokenCache(context);
 
         StringBuilder url = new StringBuilder();
@@ -36,6 +36,8 @@ public class MessageBO {
         Map<String, String> data = new HashMap<String, String>();
         data.put("email", user.getEmail());
         data.put("user_two", user_to.getEmail());
+        data.put("page", String.valueOf(page)); //Number of page to request, first page is 1
+        data.put("page_size", String.valueOf(page_size));
 
         JSONObject content = new JSONObject(data);
 
@@ -117,7 +119,6 @@ public class MessageBO {
         Map<String, String> data = new HashMap<String, String>();
         data.put("email", user.getEmail());
         data.put("list_size", String.valueOf(message.size()));
-        //data.put("id", String.valueOf(message.getId()));
         data.put("favor", String.valueOf(favor));
 
         for(int i = 0; i < message.size(); ++i) {

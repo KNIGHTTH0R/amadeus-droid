@@ -17,6 +17,7 @@ import com.google.gson.Gson;
 import java.lang.System;
 
 import amadeuslms.amadeus.R;
+import amadeuslms.amadeus.activity.LoginActivity;
 import amadeuslms.amadeus.bo.UserBO;
 import amadeuslms.amadeus.cache.CacheController;
 import amadeuslms.amadeus.cache.TokenCacheController;
@@ -96,7 +97,8 @@ public class TokenResponse extends GenericResponse {
 
     public boolean isToken_expired() {
         return (System.currentTimeMillis() - time_stamp)/1000 >= expires_in - 1800;
-        //1800'll work like a tolerance, allowing token to be renovate before it's expire, reducing chances of some error.
+        //1800 will work like a tolerance, allowing token to be renovate before it's expire, reducing chances of some error.
+        //You can change this value anytime. Actually it's 5% of the time of a token.
     }
 
     public void startRenewToken(Intent intent, Context context) {
@@ -146,21 +148,22 @@ public class TokenResponse extends GenericResponse {
                     title = userResponse.getTitle();
                     message = userResponse.getMessage();
                 }
-            }
 
-            if(!TextUtils.isEmpty(title) && !TextUtils.isEmpty(message)){
-                AlertDialog.Builder builder = new AlertDialog.Builder(context);
-                builder.setTitle(title);
-                builder.setMessage(message);
+                if(!TextUtils.isEmpty(title) && !TextUtils.isEmpty(message)){
+                    AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                    builder.setTitle(title);
+                    builder.setMessage(message);
 
-                builder.setPositiveButton(context.getResources().getString(R.string.ok), new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                });
+                    builder.setPositiveButton(context.getResources().getString(R.string.ok), new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                            goLogin(context);
+                        }
+                    });
 
-                builder.create().show();
+                    builder.create().show();
+                }
             }
         }
     }
@@ -214,23 +217,30 @@ public class TokenResponse extends GenericResponse {
                     title = userResponse.getTitle();
                     message = userResponse.getMessage();
                 }
-            }
 
-            if(!TextUtils.isEmpty(title) && !TextUtils.isEmpty(message)){
-                AlertDialog.Builder builder = new AlertDialog.Builder(context);
-                builder.setTitle(title);
-                builder.setMessage(message);
+                if(!TextUtils.isEmpty(title) && !TextUtils.isEmpty(message)){
+                    AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                    builder.setTitle(title);
+                    builder.setMessage(message);
 
-                builder.setPositiveButton(context.getResources().getString(R.string.ok), new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                });
+                    builder.setPositiveButton(context.getResources().getString(R.string.ok), new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                            goLogin(context);
+                        }
+                    });
 
-                builder.create().show();
+                    builder.create().show();
+                }
             }
         }
     }
 
+    public void goLogin(Context context) {
+        Intent intent = new Intent(context, LoginActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        (context).startActivity(intent);
+    }
 }

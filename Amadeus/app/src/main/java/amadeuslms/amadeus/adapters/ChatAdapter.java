@@ -31,6 +31,7 @@ import amadeuslms.amadeus.models.MessageModel;
 import amadeuslms.amadeus.models.UserModel;
 import amadeuslms.amadeus.utils.DateUtils;
 import amadeuslms.amadeus.utils.StringUtils;
+import amadeuslms.amadeus.utils.TypefacesUtil;
 
 /**
  * Created by zambom on 20/07/17.
@@ -103,7 +104,12 @@ public class ChatAdapter extends RecyclerView.Adapter<MessageViewHolder> {
 
                 holder.flSent.setVisibility(FrameLayout.VISIBLE);
                 holder.tvMsgSent.setText(StringUtils.stripTags(message.getText()));
-                holder.tvDateSent.setText(DateUtils.getHour(message.getCreate_date()));
+                if(message.getFavorite()) {
+                    holder.tvDateSent.setText("\uf08d" + " " + DateUtils.getHour(message.getCreate_date()));
+                } else {
+                    holder.tvDateSent.setText(DateUtils.getHour(message.getCreate_date()));
+                }
+                TypefacesUtil.setFontAwesome(context, holder.tvDateSent);
                 //MARK: - Set action when select message
                 holder.flSent.setOnLongClickListener(new View.OnLongClickListener() {
                     @Override
@@ -205,7 +211,12 @@ public class ChatAdapter extends RecyclerView.Adapter<MessageViewHolder> {
 
                 holder.flReceived.setVisibility(FrameLayout.VISIBLE);
                 holder.tvMsgReceived.setText(StringUtils.stripTags(message.getText()));
-                holder.tvDateReceived.setText(DateUtils.getHour(message.getCreate_date()));
+                if(message.getFavorite()) {
+                    holder.tvDateReceived.setText("\uf08d" + " " + DateUtils.getHour(message.getCreate_date()));
+                } else {
+                    holder.tvDateReceived.setText(DateUtils.getHour(message.getCreate_date()));
+                }
+                TypefacesUtil.setFontAwesome(context, holder.tvDateReceived);
                 //MARK: - Set action when select message
                 holder.flReceived.setOnLongClickListener(new View.OnLongClickListener() {
                     @Override

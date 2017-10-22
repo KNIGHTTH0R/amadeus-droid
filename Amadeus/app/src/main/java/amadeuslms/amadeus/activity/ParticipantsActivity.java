@@ -63,6 +63,8 @@ public class ParticipantsActivity extends AppCompatActivity implements SwipeRefr
 
     private ActionBar actionBar;
 
+    private boolean hasClickedNotification = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -134,6 +136,15 @@ public class ParticipantsActivity extends AppCompatActivity implements SwipeRefr
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        if(hasClickedNotification) {
+            onRefresh();
+            hasClickedNotification = false;
+        }
+    }
+
+    @Override
     public void onRefresh() {
         if(TokenCacheController.hasTokenCache(this) && TokenCacheController.getTokenCache(this).isToken_expired()) {
             Intent intent = new Intent(this, ParticipantsActivity.class);
@@ -156,6 +167,9 @@ public class ParticipantsActivity extends AppCompatActivity implements SwipeRefr
                 TokenCacheController.getTokenCache(this).startRenewToken(intent, this);
             } else {
                 startActivity(intent);
+            }
+            if(participant.getUnseen_msgs() > 0) {
+                hasClickedNotification = true;
             }
         }
     }

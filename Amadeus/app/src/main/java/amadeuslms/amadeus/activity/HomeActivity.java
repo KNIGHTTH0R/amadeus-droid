@@ -84,6 +84,9 @@ public class HomeActivity extends AppCompatActivity implements SwipeRefreshLayou
     private SearchView searchtoolbar;
     private ImageView mCloseButton;
 
+
+    private boolean hasClickedNotification = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -234,6 +237,14 @@ public class HomeActivity extends AppCompatActivity implements SwipeRefreshLayou
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        if(hasClickedNotification) {
+            onRefresh();
+            hasClickedNotification = false;
+        }
+    }
 
     @Override
     public void onRefresh() {
@@ -259,6 +270,9 @@ public class HomeActivity extends AppCompatActivity implements SwipeRefreshLayou
                 TokenCacheController.getTokenCache(this).startRenewToken(intent, this);
             } else {
                 startActivity(intent);
+            }
+            if(subject.getNotifications() > 0) {
+                hasClickedNotification = true;
             }
         }
     }

@@ -351,6 +351,19 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     @Override
+    public void onBackPressed() {
+        if (hideMenu) {
+            actionBar.setCustomView(actionBarCustom, params);
+            hideMenu = false;
+            invalidateOptionsMenu();
+            adapter.clearSelection();
+        } else {
+            super.onBackPressed();
+        }
+
+    }
+
+    @Override
     protected void onStart() {
         super.onStart();
 
@@ -1093,7 +1106,6 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                     hideMenu = true;
                     invalidateOptionsMenu();
                     actionBar.setCustomView(selectionBarCustom, params);
-                    System.out.println("Link Start");
                 }
                 public void onDeselected() {
                     actionBar.setCustomView(actionBarCustom, params);

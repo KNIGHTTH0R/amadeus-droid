@@ -56,7 +56,7 @@
 
                     <FrameLayout
                         android:id="@+id/received_img_container"
-                        android:layout_width="match_parent"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content">
 
                         <ImageView
@@ -76,14 +76,14 @@
 
                     <TextView
                         android:id="@+id/received_text"
-                        android:layout_width="match_parent"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textColor="@color/primaryBlack"
                         android:textSize="@dimen/sp14" />
 
                     <TextView
                         android:id="@+id/received_date"
-                        android:layout_width="match_parent"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="@dimen/dp5"
                         android:layout_marginRight="@dimen/dp5"
@@ -119,7 +119,7 @@
 
                     <FrameLayout
                         android:id="@+id/sent_img_container"
-                        android:layout_width="match_parent"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content">
 
                         <ImageView
@@ -139,14 +139,14 @@
 
                     <TextView
                         android:id="@+id/sent_text"
-                        android:layout_width="match_parent"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textColor="@color/primaryBlack"
                         android:textSize="@dimen/sp14" />
 
                     <TextView
                         android:id="@+id/sent_date"
-                        android:layout_width="match_parent"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="@dimen/dp5"
                         android:layout_marginRight="@dimen/dp5"

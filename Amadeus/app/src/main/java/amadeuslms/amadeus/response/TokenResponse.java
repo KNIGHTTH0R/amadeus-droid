@@ -110,7 +110,6 @@ public class TokenResponse extends GenericResponse {
 
     private class RenewToken extends AsyncTask<Void, Void, UserResponse> {
 
-        private String title, message;
         private Intent intent;
         private Context context;
 
@@ -129,8 +128,8 @@ public class TokenResponse extends GenericResponse {
             try {
                 return new UserBO().login(context, webserver_url, email, password);
             } catch (Exception e) {
-                title = context.getString(R.string.error_box_title);
-                message = context.getString(R.string.error_box_msg) + " " + e.getMessage();
+                System.out.println(e);
+                goLogin(context);
             }
 
             return null;
@@ -144,25 +143,6 @@ public class TokenResponse extends GenericResponse {
                 if (userResponse.getSuccess() && userResponse.getNumber() == 1) {
                     UserCacheController.setUserCache(context, userResponse.getData());
                     context.startActivity(intent);
-                } else if (!TextUtils.isEmpty(userResponse.getTitle()) && !TextUtils.isEmpty(userResponse.getMessage())){
-                    title = userResponse.getTitle();
-                    message = userResponse.getMessage();
-                }
-
-                if(!TextUtils.isEmpty(title) && !TextUtils.isEmpty(message)){
-                    AlertDialog.Builder builder = new AlertDialog.Builder(context);
-                    builder.setTitle(title);
-                    builder.setMessage(message);
-
-                    builder.setPositiveButton(context.getResources().getString(R.string.ok), new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                            goLogin(context);
-                        }
-                    });
-
-                    builder.create().show();
                 }
             }
         }
@@ -177,7 +157,6 @@ public class TokenResponse extends GenericResponse {
 
     private class RenewToken_ForResult extends AsyncTask<Void, Void, UserResponse> {
 
-        private String title, message;
         private Intent intent;
         private Context context;
         private int integer;
@@ -198,8 +177,8 @@ public class TokenResponse extends GenericResponse {
             try {
                 return new UserBO().login(context, webserver_url, email, password);
             } catch (Exception e) {
-                title = context.getString(R.string.error_box_title);
-                message = context.getString(R.string.error_box_msg) + " " + e.getMessage();
+                System.out.println(e);
+                goLogin(context);
             }
 
             return null;
@@ -213,25 +192,6 @@ public class TokenResponse extends GenericResponse {
                 if (userResponse.getSuccess() && userResponse.getNumber() == 1) {
                     UserCacheController.setUserCache(context, userResponse.getData());
                     ((Activity)context).startActivityForResult(intent, integer);
-                } else if (!TextUtils.isEmpty(userResponse.getTitle()) && !TextUtils.isEmpty(userResponse.getMessage())){
-                    title = userResponse.getTitle();
-                    message = userResponse.getMessage();
-                }
-
-                if(!TextUtils.isEmpty(title) && !TextUtils.isEmpty(message)){
-                    AlertDialog.Builder builder = new AlertDialog.Builder(context);
-                    builder.setTitle(title);
-                    builder.setMessage(message);
-
-                    builder.setPositiveButton(context.getResources().getString(R.string.ok), new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                            goLogin(context);
-                        }
-                    });
-
-                    builder.create().show();
                 }
             }
         }

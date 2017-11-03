@@ -1075,6 +1075,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     //MARK: - Function to filter the messages
     public List<MessageModel> filterMessages() {
         List<MessageModel> filtered = new ArrayList<MessageModel>();
+        if (messageList == null) return null;
         if(my_msgChecked && !fav_msgChecked) {
             for(int i = 0; i < messageList.size(); ++i) {
                 if(messageList.get(i).getUser().getEmail().equals(user.getEmail())) {

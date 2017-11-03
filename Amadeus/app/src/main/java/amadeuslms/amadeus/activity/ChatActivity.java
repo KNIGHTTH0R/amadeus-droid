@@ -97,6 +97,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     private boolean isLastPage = false;
 
     private int actual_page = 0;
+    private double unseen_msgs = 0;
 
     private ChatAdapter adapter;
     private RecyclerView recyclerView;
@@ -224,6 +225,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
 
             if (UserCacheController.hasUserCache(this)) {
                 user = UserCacheController.getUserCache(this);
+                unseen_msgs = user_to.getUnseen_msgs();
 
                 context = this;
 
@@ -231,7 +233,14 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                 handler.post(new Runnable() {
                     @Override
                     public void run() {
-                        new LoadChat(context, user, user_to).execute();
+                        if(unseen_msgs > PAGE_SIZE) {
+                            int missing_unseen_pages = (int) Math.ceil(((double) user_to.getUnseen_msgs()) / PAGE_SIZE);
+                            int pageSize = PAGE_SIZE * missing_unseen_pages;
+                            new LoadChat(context, user, user_to, pageSize).execute();
+                            actual_page = actual_page + missing_unseen_pages - 1;
+                        } else {
+                            new LoadChat(context, user, user_to, PAGE_SIZE).execute();
+                        }
                     }
                 });
             } else {
@@ -762,11 +771,13 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         private Context context;
         private UserModel user,  user_to;
         private String title, message;
+        private int pageSize;
 
-        public LoadChat(Context context, UserModel user, UserModel user_to) {
+        public LoadChat(Context context, UserModel user, UserModel user_to, int pageSize) {
             this.context = context;
             this.user = user;
             this.user_to = user_to;
+            this.pageSize = pageSize;
         }
 
         @Override
@@ -778,7 +789,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         protected MessageResponse doInBackground(Void... params) {
             if(!TokenCacheController.getTokenCache(context).isToken_expired()) {
                 try {
-                    return new MessageBO().get_messages(context, user, user_to, 1, PAGE_SIZE);
+                    return new MessageBO().get_messages(context, user, user_to, 1, pageSize);
                 } catch (Exception e){
                     title = context.getString(R.string.error_box_title);
                     message = context.getString(R.string.error_box_msg) + " " + e.getMessage();

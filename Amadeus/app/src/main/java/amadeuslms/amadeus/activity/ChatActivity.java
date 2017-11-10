@@ -15,7 +15,7 @@ import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.packageManager;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
@@ -293,7 +293,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     };
     
     private void askForPermission(String permission, Integer requestCode) {
-        if (ContextCompat.checkSelfPermission(ChatActivity.this, permission) != packageManager.PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(ChatActivity.this, permission) != PackageManager.PERMISSION_GRANTED) {
             if (ActivityCompat.shouldShowRequestPermissionRationale(ChatActivity.this, permission)) {
                 //This is called if user has denied the permission before
                 //In this case I am just asking the permission again
@@ -316,7 +316,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if(ActivityCompat.checkSelfPermission(this, permissions[0]) == packageManager.PERMISSION_GRANTED) {
+        if(ActivityCompat.checkSelfPermission(this, permissions[0]) == PackageManager.PERMISSION_GRANTED) {
             switch (requestCode) {
                 case 3:
                     WRITE_GRANTED = true;
